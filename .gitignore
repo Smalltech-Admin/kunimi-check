@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# session state (local only)
+SESSION_STATE.md
+
+# reference materials
+QRコード/
+チェック表フォーマット/
