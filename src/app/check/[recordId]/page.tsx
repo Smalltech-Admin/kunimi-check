@@ -878,12 +878,11 @@ export default function CheckPage() {
           <div className="flex items-center justify-between">
             {/* Back button */}
             <Button
-              variant="ghost"
-              size="sm"
+              variant="outline"
               onClick={handleBack}
-              className="text-muted-foreground -ml-2"
+              className="h-11 px-4 text-sm font-medium border-2 border-slate-300 hover:border-slate-500 hover:bg-slate-100 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 mr-1" />
+              <ArrowLeft className="w-5 h-5 mr-2" />
               戻る
             </Button>
 

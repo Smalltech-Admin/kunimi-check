@@ -25,7 +25,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
     {
       href: '/home',
       label: 'ホーム',
-      icon: <Home className="h-6 w-6" />,
+      icon: <Home className="h-7 w-7" />,
     },
   ];
 
@@ -34,7 +34,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
     navItems.push({
       href: '/approval',
       label: '承認待ち',
-      icon: <ClipboardCheck className="h-6 w-6" />,
+      icon: <ClipboardCheck className="h-7 w-7" />,
       badge: pendingCount > 0 ? pendingCount : undefined,
     });
   }
@@ -42,7 +42,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
   navItems.push({
     href: '/history',
     label: '履歴',
-    icon: <History className="h-6 w-6" />,
+    icon: <History className="h-7 w-7" />,
   });
 
   return (
@@ -52,7 +52,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
       className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="flex items-center justify-around h-16 max-w-4xl mx-auto">
+      <div className="flex items-center justify-around h-20 max-w-4xl mx-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
@@ -75,7 +75,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
                 )}
               </div>
               <span className={cn(
-                'text-xs mt-1 font-medium',
+                'text-sm mt-1 font-medium',
                 isActive && 'text-primary'
               )}>
                 {item.label}
