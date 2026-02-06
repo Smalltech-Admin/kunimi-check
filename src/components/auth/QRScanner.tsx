@@ -50,7 +50,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
       scannerRef.current = scanner;
 
       await scanner.start(
-        { facingMode: 'environment' },
+        { facingMode: 'user' },  // 内カメラ（フロントカメラ）を使用
         {
           fps: 10,
           qrbox: { width: 200, height: 200 },
