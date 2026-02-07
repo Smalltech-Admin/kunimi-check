@@ -66,6 +66,7 @@ export default function ApprovalDetailPage() {
   const [rejectReason, setRejectReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [ipadPdfMessage, setIpadPdfMessage] = useState(false);
 
   // ユーザー情報取得
   useEffect(() => {
@@ -304,7 +305,11 @@ export default function ApprovalDetailPage() {
         lineMap,
       };
 
-      await generateCheckRecordPdf(pdfData);
+      const result = await generateCheckRecordPdf(pdfData);
+      if (result.openedInNewTab) {
+        setIpadPdfMessage(true);
+        setTimeout(() => setIpadPdfMessage(false), 5000);
+      }
     } catch (err) {
       console.error('[ApprovalDetail] PDF generation error:', err);
     } finally {
@@ -427,6 +432,18 @@ export default function ApprovalDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col">
+      {/* iPad PDF notification */}
+      {ipadPdfMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-0 left-0 right-0 z-[100] bg-emerald-600 text-white px-4 py-3 text-center text-sm font-medium shadow-lg"
+        >
+          PDFを新しいタブで開きました。共有ボタンから保存・印刷できます。
+        </motion.div>
+      )}
+
       {/* Fixed Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
