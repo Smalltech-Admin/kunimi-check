@@ -18,6 +18,7 @@ import { CheckSection } from '@/components/check/CheckSection';
 import { CheckItem } from '@/components/check/CheckItem';
 import { RepeatableTable } from '@/components/check/RepeatableTable';
 import { createClient } from '@/lib/supabase/client';
+import { logOperation } from '@/lib/operationLog';
 import {
   makeRepeatableKey,
   makeExistingKey,
@@ -885,10 +886,8 @@ export default function CheckPage() {
       return;
     }
 
-    // 操作ログ（id, created_at は自動生成）
-    await (supabase.from('operation_logs') as unknown as {
-      insert: (values: Record<string, unknown>) => Promise<{ error: unknown }>;
-    }).insert({
+    // 操作ログ（API経由でIP/User-Agentを記録）
+    await logOperation({
       user_id: user.id,
       action: 'submit_record',
       target_type: 'check_record',
@@ -899,8 +898,6 @@ export default function CheckPage() {
         production_date: (productionDateItemId ? formData[productionDateItemId] : formData['production_date']),
         batch_number: formData['batch_number'],
       },
-      ip_address: null,
-      user_agent: null,
     });
 
     setIsSubmitting(false);

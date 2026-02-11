@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { createClient } from '@/lib/supabase/client';
+import { logOperation } from '@/lib/operationLog';
 import { generateCheckRecordPdf, isIOSDevice } from '@/lib/generatePdf';
 import type { CheckRecordPDFData, ItemMeta } from '@/components/pdf/CheckRecordPDF';
 import type { User, Section } from '@/types';
@@ -338,10 +339,8 @@ export default function ApprovalDetailPage() {
       return;
     }
 
-    // 操作ログ（id, created_at は自動生成）
-    await (supabase.from('operation_logs') as unknown as {
-      insert: (values: Record<string, unknown>) => Promise<{ error: unknown }>;
-    }).insert({
+    // 操作ログ（API経由でIP/User-Agentを記録）
+    await logOperation({
       user_id: user.id,
       action: 'approve_record',
       target_type: 'check_record',
@@ -351,8 +350,6 @@ export default function ApprovalDetailPage() {
         production_date: record.production_date,
         batch_number: record.batch_number,
       },
-      ip_address: null,
-      user_agent: null,
     });
 
     setShowApproveDialog(false);
@@ -380,10 +377,8 @@ export default function ApprovalDetailPage() {
       return;
     }
 
-    // 操作ログ（id, created_at は自動生成）
-    await (supabase.from('operation_logs') as unknown as {
-      insert: (values: Record<string, unknown>) => Promise<{ error: unknown }>;
-    }).insert({
+    // 操作ログ（API経由でIP/User-Agentを記録）
+    await logOperation({
       user_id: user.id,
       action: 'reject_record',
       target_type: 'check_record',
@@ -394,8 +389,6 @@ export default function ApprovalDetailPage() {
         batch_number: record.batch_number,
         reject_reason: rejectReason.trim(),
       },
-      ip_address: null,
-      user_agent: null,
     });
 
     setShowRejectDialog(false);
