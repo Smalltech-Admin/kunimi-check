@@ -265,30 +265,61 @@ export default function CheckPage() {
   // テンプレートの validation は2形式ある:
   //   range: { type: "range", min: 1, max: 12 }
   //   min/max: { type: "max", value: 10 } または { type: "min", value: 3.5 }
+  //   expiry_date: 賞味期限が過去の日付でないか＋製造日以降であるかチェック
   // "value" プロパティは min/max 単独指定時の閾値として使用される
   const isOutOfRange = useCallback(
-    (item: Item, value: ItemValue): boolean => {
+    (item: Item, value: ItemValue): { invalid: boolean; message?: string } => {
       if (!item.validation || value === null || value === undefined || value === '') {
-        return false;
+        return { invalid: false };
       }
-      const numValue = Number(value);
-      if (isNaN(numValue)) return false;
 
       const v = item.validation;
+
+      // 賞味期限チェック
+      if (v.type === 'expiry_date') {
+        const inputDate = new Date(String(value));
+        if (isNaN(inputDate.getTime())) return { invalid: false };
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (inputDate < today) {
+          return { invalid: true, message: v.message || '賞味期限が過去の日付です' };
+        }
+
+        // 製造日との比較
+        const prodDateStr = formData['production_date'] as string | undefined;
+        if (prodDateStr) {
+          const prodDate = new Date(prodDateStr);
+          prodDate.setHours(0, 0, 0, 0);
+          if (inputDate <= prodDate) {
+            return { invalid: true, message: '賞味期限が製造日以前です' };
+          }
+        }
+
+        return { invalid: false };
+      }
+
+      // 数値チェック
+      const numValue = Number(value);
+      if (isNaN(numValue)) return { invalid: false };
+
       if (v.type === 'range') {
-        return (v.min !== undefined && numValue < v.min) || (v.max !== undefined && numValue > v.max);
+        const out = (v.min !== undefined && numValue < v.min) || (v.max !== undefined && numValue > v.max);
+        return { invalid: out, message: out ? v.message : undefined };
       }
       if (v.type === 'min') {
         const threshold = v.min ?? v.value;
-        return threshold !== undefined && numValue < threshold;
+        const out = threshold !== undefined && numValue < threshold;
+        return { invalid: out, message: out ? v.message : undefined };
       }
       if (v.type === 'max') {
         const threshold = v.max ?? v.value;
-        return threshold !== undefined && numValue > threshold;
+        const out = threshold !== undefined && numValue > threshold;
+        return { invalid: out, message: out ? v.message : undefined };
       }
-      return false;
+      return { invalid: false };
     },
-    []
+    [formData]
   );
 
   // エラー一覧を計算
@@ -311,15 +342,16 @@ export default function CheckPage() {
         });
       }
 
-      // 範囲外チェック
+      // 範囲外・賞味期限チェック
       if (item.validation && value !== null && value !== undefined && value !== '') {
-        if (isOutOfRange(item, value)) {
+        const result = isOutOfRange(item, value);
+        if (result.invalid) {
           errorList.push({
             formKey,
             itemId: item.id,
             itemName: item.label,
             type: 'out_of_range',
-            message: item.validation.message,
+            message: result.message || item.validation.message,
             severity: 'error',
             value,
             range: { min: item.validation.min, max: item.validation.max },
@@ -368,10 +400,10 @@ export default function CheckPage() {
       // 重要項目の範囲外チェック
       if (criticalItemIds.includes(item.id) && value !== null && value !== '') {
         if (item.validation) {
-          const numValue = Number(value);
-          if (!isNaN(numValue) && isOutOfRange(item, numValue)) {
+          const result = isOutOfRange(item, value);
+          if (result.invalid) {
             if (!acknowledgedErrors.has(formKey)) {
-              setCriticalWarning({ show: true, item, value: numValue });
+              setCriticalWarning({ show: true, item, value: Number(value) || 0 });
             }
           } else {
             setAcknowledgedErrors((prev) => {
