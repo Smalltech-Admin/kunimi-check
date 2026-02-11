@@ -96,6 +96,9 @@ export default function CheckPage() {
   // 既存のrecord_items（変更履歴用に前の値を保持）
   const existingItemsRef = useRef<Record<string, RecordItem>>({});
 
+  // 各項目の入力時刻を記録（FSSC22000対応: 入力された瞬間の時刻を保持）
+  const [inputTimestamps, setInputTimestamps] = useState<Record<string, string>>({});
+
   // 重要項目の範囲外警告用
   const [criticalWarning, setCriticalWarning] = useState<{
     show: boolean;
@@ -213,6 +216,7 @@ export default function CheckPage() {
           const items = recordItems as unknown as RecordItem[];
           const restoredFormData: FormData = {};
           const existingMap: Record<string, RecordItem> = {};
+          const restoredTimestamps: Record<string, string> = {};
           // repeatableセクションIDのセット（テンプレートから構築）
           const repeatableSectionIds = templateData
             ? buildRepeatableSectionIds(
@@ -229,6 +233,10 @@ export default function CheckPage() {
               const formKey = makeRepeatableKey(ri.item_id, rowIdx);
               restoredFormData[formKey] = ri.value;
               existingMap[makeExistingKey(ri.item_id, rowIdx)] = ri;
+              // 入力時刻も復元（FSSC22000対応）
+              if (ri.input_at) {
+                restoredTimestamps[formKey] = ri.input_at;
+              }
               // 最大行数を追跡
               const current = maxRowBySection[ri.section_id] ?? 0;
               maxRowBySection[ri.section_id] = Math.max(current, rowIdx + 1);
@@ -236,11 +244,16 @@ export default function CheckPage() {
               // 非repeatable項目
               restoredFormData[ri.item_id] = ri.value;
               existingMap[ri.item_id] = ri;
+              // 入力時刻も復元（FSSC22000対応）
+              if (ri.input_at) {
+                restoredTimestamps[ri.item_id] = ri.input_at;
+              }
             }
           });
 
           setFormData(restoredFormData);
           existingItemsRef.current = existingMap;
+          setInputTimestamps(restoredTimestamps);
 
           // 保存済みデータから行数を復元
           if (Object.keys(maxRowBySection).length > 0) {
@@ -434,6 +447,19 @@ export default function CheckPage() {
 
       setFormData((prev) => ({ ...prev, [formKey]: value }));
 
+      // 入力時刻を記録（FSSC22000対応: 各項目の実際の入力時刻を保持）
+      // 既存の入力時刻がなく、新しい値が入力された場合のみ記録
+      if (value !== null && value !== '') {
+        setInputTimestamps((prev) => {
+          // 既に入力時刻が記録されている場合は更新しない（初回入力時刻を保持）
+          // ただし、値がクリアされて再入力された場合は更新する
+          if (!prev[formKey]) {
+            return { ...prev, [formKey]: new Date().toISOString() };
+          }
+          return prev;
+        });
+      }
+
       // 対応するテンプレート項目を検索
       const expanded = expandedItems.find((e) => e.formKey === formKey);
       if (!expanded) return;
@@ -489,6 +515,13 @@ export default function CheckPage() {
     (formKey: string) => {
       if (user) {
         setFormData((prev) => ({ ...prev, [formKey]: user.user_id }));
+        // 入力時刻を記録（FSSC22000対応）
+        setInputTimestamps((prev) => {
+          if (!prev[formKey]) {
+            return { ...prev, [formKey]: new Date().toISOString() };
+          }
+          return prev;
+        });
       }
     },
     [user]
@@ -671,6 +704,9 @@ export default function CheckPage() {
           }
         } else {
           const newId = crypto.randomUUID();
+          // FSSC22000対応: 入力時刻は実際に入力された時刻を使用
+          // inputTimestampsに記録されていればそれを使用、なければ現在時刻
+          const actualInputAt = inputTimestamps[formKey] || now;
           upsertItems.push({
             id: newId,
             record_id: recId,
@@ -679,7 +715,7 @@ export default function CheckPage() {
             row_index: rowIndex,
             value,
             input_by: user.id,
-            input_at: now,
+            input_at: actualInputAt,
             updated_by: null,
             updated_at: null,
           });
@@ -692,7 +728,7 @@ export default function CheckPage() {
             old_value: null,
             new_value: value,
             changed_by: user.id,
-            changed_at: now,
+            changed_at: actualInputAt,
             change_reason: null,
             change_type: 'create',
           });
@@ -764,7 +800,7 @@ export default function CheckPage() {
         existingItemsRef.current[key] = upserted as unknown as RecordItem;
       });
     },
-    [user, sections, formData, rowCounts, supabase]
+    [user, sections, formData, rowCounts, supabase, inputTimestamps]
   );
 
   // 一時保存
