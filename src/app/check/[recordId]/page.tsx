@@ -1271,63 +1271,118 @@ export default function CheckPage() {
         </DialogContent>
       </Dialog>
 
-      {/* 賞味期限エラー警告ダイアログ（赤） */}
+      {/* 賞味期限エラー警告ダイアログ - 大葉ミンチ(P001)は強調表示 */}
       <Dialog
         open={expiryWarning.show}
         onOpenChange={(open) => {
           if (!open) handleFixExpiryWarning();
         }}
       >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600">
-              <AlertTriangle className="w-6 h-6" />
-              賞味期限エラー
-            </DialogTitle>
-            <DialogDescription>
-              {expiryWarning.item && (
-                <>
-                  <span className="font-medium text-foreground">
-                    {expiryWarning.item.label}
+        {productId === 'P001' ? (
+          /* 大葉ミンチ（簡易版）用: フルスクリーン風の強調ダイアログ */
+          <DialogContent className="sm:max-w-lg border-4 border-red-600 bg-red-50 dark:bg-red-950">
+            <DialogHeader className="space-y-4">
+              <div className="flex justify-center">
+                <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center animate-pulse">
+                  <XCircle className="w-12 h-12 text-white" />
+                </div>
+              </div>
+              <DialogTitle className="text-center text-2xl font-bold text-red-700 dark:text-red-400">
+                ⚠️ 賞味期限エラー ⚠️
+              </DialogTitle>
+              <DialogDescription className="text-center text-red-600 dark:text-red-300 text-base font-medium">
+                賞味期限が製造日より前の日付です！
+                <br />
+                入力内容を確認してください。
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-6 space-y-4">
+              <div className="bg-red-100 dark:bg-red-900/50 border-2 border-red-500 rounded-xl p-5">
+                <div className="text-center">
+                  <span className="text-sm font-medium text-red-600 dark:text-red-400">賞味期限</span>
+                  <div className="text-3xl font-bold text-red-700 dark:text-red-300 mt-2">
+                    {expiryWarning.expiryDate || '-'}
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl p-5">
+                <div className="text-center">
+                  <span className="text-sm text-muted-foreground">製造日</span>
+                  <div className="text-2xl font-semibold text-foreground mt-2">
+                    {expiryWarning.productionDate || '未入力'}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter className="flex-col gap-3 sm:flex-col">
+              <Button
+                onClick={handleFixExpiryWarning}
+                className="w-full h-14 text-lg bg-red-600 hover:bg-red-700 text-white"
+              >
+                確認して修正する
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={handleAcknowledgeExpiryWarning}
+                className="w-full text-red-600 hover:text-red-700 hover:bg-red-100"
+              >
+                このまま続ける（非推奨）
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        ) : (
+          /* その他製品用: 通常の警告ダイアログ */
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <AlertTriangle className="w-6 h-6" />
+                賞味期限エラー
+              </DialogTitle>
+              <DialogDescription>
+                {expiryWarning.item && (
+                  <>
+                    <span className="font-medium text-foreground">
+                      {expiryWarning.item.label}
+                    </span>
+                    が製造日より前の日付になっています。
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-3">
+              <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-red-600 dark:text-red-400">賞味期限</span>
+                  <span className="text-lg font-bold text-red-700 dark:text-red-300">
+                    {expiryWarning.expiryDate || '-'}
                   </span>
-                  が製造日より前の日付になっています。
-                </>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 space-y-3">
-            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-red-600 dark:text-red-400">賞味期限</span>
-                <span className="text-lg font-bold text-red-700 dark:text-red-300">
-                  {expiryWarning.expiryDate || '-'}
-                </span>
+                </div>
+              </div>
+              <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">製造日</span>
+                  <span className="text-lg font-medium text-foreground">
+                    {expiryWarning.productionDate || '未入力'}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">製造日</span>
-                <span className="text-lg font-medium text-foreground">
-                  {expiryWarning.productionDate || '未入力'}
-                </span>
-              </div>
+            <div className="text-sm text-muted-foreground mb-4">
+              このまま続けますか？それとも確認して修正しますか？
             </div>
-          </div>
-          <div className="text-sm text-muted-foreground mb-4">
-            このまま続けますか？それとも確認して修正しますか？
-          </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={handleFixExpiryWarning}>
-              確認して修正
-            </Button>
-            <Button
-              onClick={handleAcknowledgeExpiryWarning}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              このまま続ける
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button variant="outline" onClick={handleFixExpiryWarning}>
+                確認して修正
+              </Button>
+              <Button
+                onClick={handleAcknowledgeExpiryWarning}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                このまま続ける
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
       </Dialog>
 
       {/* 保存成功ダイアログ */}
