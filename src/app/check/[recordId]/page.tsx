@@ -80,6 +80,11 @@ export default function CheckPage() {
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [showIncompleteWarning, setShowIncompleteWarning] = useState(false);
   const [showErrorWarning, setShowErrorWarning] = useState(false);
+  const [productionDateWarning, setProductionDateWarning] = useState<{
+    show: boolean;
+    date: string;
+    formKey: string;
+  }>({ show: false, date: '', formKey: '' });
 
   // Supabaseに作成されたrecord_id
   const [currentRecordId, setCurrentRecordId] = useState<string | null>(
@@ -275,22 +280,16 @@ export default function CheckPage() {
 
       const v = item.validation;
 
-      // 賞味期限チェック
+      // 賞味期限チェック（製造日より過去はNG）
       if (v.type === 'expiry_date') {
         const inputDate = new Date(String(value));
         if (isNaN(inputDate.getTime())) return { invalid: false };
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (inputDate < today) {
-          return { invalid: true, message: v.message || '賞味期限が過去の日付です' };
-        }
-
-        // 製造日との比較
         const prodDateStr = formData['production_date'] as string | undefined;
         if (prodDateStr) {
           const prodDate = new Date(prodDateStr);
           prodDate.setHours(0, 0, 0, 0);
+          inputDate.setHours(0, 0, 0, 0);
           if (inputDate <= prodDate) {
             return { invalid: true, message: '賞味期限が製造日以前です' };
           }
@@ -390,6 +389,25 @@ export default function CheckPage() {
   // 項目値の更新（formKeyを直接受け取る）
   const handleItemChange = useCallback(
     (formKey: string, value: ItemValue) => {
+      // 製造日の入力チェック
+      if (formKey === 'production_date' && value && typeof value === 'string') {
+        const inputDate = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        inputDate.setHours(0, 0, 0, 0);
+
+        // 未来日付はNG → 値を設定しない
+        if (inputDate > today) {
+          return;
+        }
+
+        // 今日以外の日付は確認ポップアップ
+        if (inputDate.getTime() !== today.getTime()) {
+          setProductionDateWarning({ show: true, date: value, formKey });
+          return;
+        }
+      }
+
       setFormData((prev) => ({ ...prev, [formKey]: value }));
 
       // 対応するテンプレート項目を検索
@@ -1189,6 +1207,54 @@ export default function CheckPage() {
           <DialogFooter>
             <Button onClick={() => setShowIncompleteWarning(false)} className="w-full">
               入力を続ける
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 製造日確認ダイアログ */}
+      <Dialog
+        open={productionDateWarning.show}
+        onOpenChange={(open) => {
+          if (!open) setProductionDateWarning({ show: false, date: '', formKey: '' });
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-600">
+              <AlertTriangle className="w-6 h-6" />
+              製造日の確認
+            </DialogTitle>
+            <DialogDescription>
+              製造日が今日ではありません。この日付で入力を続けますか？
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                {productionDateWarning.date}
+              </p>
+              <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">入力された製造日</p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setProductionDateWarning({ show: false, date: '', formKey: '' })}
+            >
+              キャンセル
+            </Button>
+            <Button
+              onClick={() => {
+                setFormData((prev) => ({
+                  ...prev,
+                  [productionDateWarning.formKey]: productionDateWarning.date,
+                }));
+                setProductionDateWarning({ show: false, date: '', formKey: '' });
+              }}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              この日付で続ける
             </Button>
           </DialogFooter>
         </DialogContent>

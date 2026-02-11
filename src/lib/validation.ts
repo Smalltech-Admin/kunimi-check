@@ -77,11 +77,11 @@ function validateWithRule(
       break;
 
     case 'expiry_date':
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      // 賞味期限チェックは check ページの isOutOfRange で製造日と比較して実施
+      // ここでは形式チェックのみ
       const inputDate = new Date(String(value));
-      if (inputDate < today) {
-        return { valid: false, message: message || '期限切れです' };
+      if (isNaN(inputDate.getTime())) {
+        return { valid: false, message: message || '日付の形式が正しくありません' };
       }
       break;
 
