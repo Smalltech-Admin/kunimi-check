@@ -127,6 +127,7 @@ export interface Item {
   options?: string[];
   allow_self?: boolean;
   allow_now_button?: boolean;
+  allow_today_button?: boolean; // 日付入力に「今日」ボタンを表示
   validation?: ValidationRule;
 }
 

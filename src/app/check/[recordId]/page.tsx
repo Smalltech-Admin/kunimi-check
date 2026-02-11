@@ -305,8 +305,9 @@ export default function CheckPage() {
           const prodDate = new Date(prodDateStr);
           prodDate.setHours(0, 0, 0, 0);
           inputDate.setHours(0, 0, 0, 0);
-          if (inputDate <= prodDate) {
-            return { invalid: true, message: '賞味期限が製造日以前です' };
+          // 賞味期限が製造日より前（1日以上前）の場合はNG、同日はOK
+          if (inputDate < prodDate) {
+            return { invalid: true, message: '賞味期限が製造日より前です' };
           }
         }
 
@@ -1039,10 +1040,14 @@ export default function CheckPage() {
                   ) : (
                     (section.items ?? []).map((item) => {
                       const itemError = errors.find((e) => e.formKey === item.id);
+                      // 製造日項目には「今日」ボタンを自動付与
+                      const enhancedItem = item.type === 'date' && item.label === '製造日'
+                        ? { ...item, allow_today_button: true }
+                        : item;
                       return (
                         <CheckItem
                           key={item.id}
-                          item={item}
+                          item={enhancedItem}
                           value={formData[item.id] ?? null}
                           onChange={(value) => handleItemChange(item.id, value)}
                           onSelfSelect={() => handleSelfSelect(item.id)}

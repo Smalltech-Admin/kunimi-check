@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, User, AlertCircle } from 'lucide-react';
+import { Clock, User, AlertCircle, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -181,13 +181,31 @@ export function CheckItem({
 
       case 'date':
         return (
-          <Input
-            type="date"
-            value={(value as string) || ''}
-            onChange={(e) => onChange(e.target.value || null)}
-            disabled={disabled}
-            className={cn(inputHeight, inputText)}
-          />
+          <div className="flex gap-2">
+            <Input
+              type="date"
+              value={(value as string) || ''}
+              onChange={(e) => onChange(e.target.value || null)}
+              disabled={disabled}
+              className={cn('flex-1', inputHeight, inputText)}
+            />
+            {item.allow_today_button && (
+              <Button
+                type="button"
+                variant="outline"
+                className={btnHeight}
+                disabled={disabled}
+                onClick={() => {
+                  const today = new Date();
+                  const dateStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+                  onChange(dateStr);
+                }}
+              >
+                <CalendarDays className={compact ? 'h-3.5 w-3.5' : 'h-4 w-4 mr-1'} />
+                {!compact && '今日'}
+              </Button>
+            )}
+          </div>
         );
 
       case 'text':
