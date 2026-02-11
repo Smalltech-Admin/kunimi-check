@@ -1280,36 +1280,39 @@ export default function CheckPage() {
       >
         {productId === 'P001' ? (
           /* 大葉ミンチ（簡易版）用: フルスクリーン警告ダイアログ */
-          <DialogContent className="w-[100vw] h-[100vh] max-w-none max-h-none p-0 border-0 rounded-none bg-red-600 dark:bg-red-700 flex flex-col">
+          <DialogContent
+            className="!fixed !inset-0 !top-0 !left-0 !translate-x-0 !translate-y-0 !w-screen !h-screen !max-w-none !max-h-none !p-0 !border-0 !rounded-none !bg-red-600 dark:!bg-red-700 flex flex-col"
+            showCloseButton={false}
+          >
             {/* 上部: 警告アイコンとタイトル */}
-            <div className="flex-1 flex flex-col items-center justify-center px-8 pt-12">
-              <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center mb-8 animate-pulse shadow-2xl">
-                <XCircle className="w-20 h-20 text-red-600" />
+            <div className="flex-1 flex flex-col items-center justify-center px-8 pt-8">
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-full bg-white flex items-center justify-center mb-6 animate-pulse shadow-2xl">
+                <XCircle className="w-16 h-16 md:w-24 md:h-24 text-red-600" />
               </div>
-              <DialogHeader className="space-y-6 text-center">
-                <DialogTitle className="text-4xl md:text-5xl font-black text-white tracking-tight">
+              <DialogHeader className="space-y-4 text-center">
+                <DialogTitle className="text-3xl md:text-5xl font-black text-white tracking-tight">
                   ⚠️ 賞味期限エラー ⚠️
                 </DialogTitle>
-                <DialogDescription className="text-xl md:text-2xl text-red-100 font-semibold">
+                <DialogDescription className="text-lg md:text-2xl text-red-100 font-semibold">
                   賞味期限が製造日より前の日付です！
                 </DialogDescription>
               </DialogHeader>
             </div>
 
             {/* 中央: 日付表示 */}
-            <div className="px-8 py-8 space-y-6">
-              <div className="bg-white rounded-2xl p-8 shadow-2xl">
+            <div className="px-6 md:px-12 py-6 space-y-4">
+              <div className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
                 <div className="text-center">
-                  <span className="text-lg font-bold text-red-600 uppercase tracking-wide">賞味期限</span>
-                  <div className="text-5xl md:text-6xl font-black text-red-700 mt-4">
+                  <span className="text-base md:text-xl font-bold text-red-600 uppercase tracking-wide">賞味期限</span>
+                  <div className="text-4xl md:text-6xl font-black text-red-700 mt-3">
                     {expiryWarning.expiryDate || '-'}
                   </div>
                 </div>
               </div>
-              <div className="bg-red-500/50 rounded-2xl p-6">
+              <div className="bg-red-500/50 rounded-2xl p-5 md:p-6">
                 <div className="text-center">
-                  <span className="text-base font-medium text-red-100">製造日</span>
-                  <div className="text-3xl md:text-4xl font-bold text-white mt-2">
+                  <span className="text-sm md:text-lg font-medium text-red-100">製造日</span>
+                  <div className="text-2xl md:text-4xl font-bold text-white mt-2">
                     {expiryWarning.productionDate || '未入力'}
                   </div>
                 </div>
@@ -1317,17 +1320,17 @@ export default function CheckPage() {
             </div>
 
             {/* 下部: ボタン */}
-            <DialogFooter className="flex-col gap-4 px-8 pb-12 pt-4">
+            <DialogFooter className="flex-col gap-3 px-6 md:px-12 pb-8 pt-2">
               <Button
                 onClick={handleFixExpiryWarning}
-                className="w-full h-20 text-2xl font-bold bg-white hover:bg-gray-100 text-red-600 rounded-2xl shadow-xl"
+                className="w-full h-16 md:h-20 text-xl md:text-2xl font-bold bg-white hover:bg-gray-100 text-red-600 rounded-2xl shadow-xl"
               >
                 確認して修正する
               </Button>
               <Button
                 variant="ghost"
                 onClick={handleAcknowledgeExpiryWarning}
-                className="w-full h-14 text-lg text-red-200 hover:text-white hover:bg-red-500/50 rounded-xl"
+                className="w-full h-12 md:h-14 text-base md:text-lg text-red-200 hover:text-white hover:bg-red-500/50 rounded-xl"
               >
                 このまま続ける（非推奨）
               </Button>
