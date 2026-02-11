@@ -103,6 +103,14 @@ export default function CheckPage() {
     value: number | null;
   }>({ show: false, item: null, value: null });
 
+  // 賞味期限エラー警告用（赤いダイアログ）
+  const [expiryWarning, setExpiryWarning] = useState<{
+    show: boolean;
+    item: Item | null;
+    expiryDate: string | null;
+    productionDate: string | null;
+  }>({ show: false, item: null, expiryDate: null, productionDate: null });
+
   // 承認済みの範囲外値（警告を「このまま続ける」で閉じた項目）
   const [acknowledgedErrors, setAcknowledgedErrors] = useState<Set<string>>(new Set());
 
@@ -448,8 +456,32 @@ export default function CheckPage() {
           }
         }
       }
+
+      // 賞味期限チェック（製造日より前の場合は赤いポップアップ）
+      if (item.validation?.type === 'expiry_date' && value !== null && value !== '') {
+        const result = isOutOfRange(item, value);
+        if (result.invalid) {
+          if (!acknowledgedErrors.has(formKey)) {
+            const prodDateStr = productionDateItemId
+              ? (formData[productionDateItemId] as string | undefined)
+              : undefined;
+            setExpiryWarning({
+              show: true,
+              item,
+              expiryDate: String(value),
+              productionDate: prodDateStr || null,
+            });
+          }
+        } else {
+          setAcknowledgedErrors((prev) => {
+            const next = new Set(prev);
+            next.delete(formKey);
+            return next;
+          });
+        }
+      }
     },
-    [expandedItems, isOutOfRange, acknowledgedErrors, criticalItemIds, productionDateItemId]
+    [expandedItems, isOutOfRange, acknowledgedErrors, criticalItemIds, productionDateItemId, formData]
   );
 
   // 自分を選択（formKeyを直接受け取る）
@@ -872,6 +904,26 @@ export default function CheckPage() {
     setCriticalWarning({ show: false, item: null, value: null });
   };
 
+  // 賞味期限警告を「このまま続ける」で閉じる
+  const handleAcknowledgeExpiryWarning = () => {
+    if (expiryWarning.item) {
+      const itemId = expiryWarning.item.id;
+      setAcknowledgedErrors((prev) => {
+        const next = new Set(prev);
+        expandedItems
+          .filter((e) => e.item.id === itemId)
+          .forEach((e) => next.add(e.formKey));
+        return next;
+      });
+    }
+    setExpiryWarning({ show: false, item: null, expiryDate: null, productionDate: null });
+  };
+
+  // 賞味期限警告を「確認して修正」で閉じる
+  const handleFixExpiryWarning = () => {
+    setExpiryWarning({ show: false, item: null, expiryDate: null, productionDate: null });
+  };
+
   // repeatable行の追加
   const handleAddRow = useCallback(
     (sectionId: string) => {
@@ -1179,6 +1231,65 @@ export default function CheckPage() {
             <Button
               onClick={handleAcknowledgeCriticalWarning}
               className="bg-amber-600 hover:bg-amber-700"
+            >
+              このまま続ける
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 賞味期限エラー警告ダイアログ（赤） */}
+      <Dialog
+        open={expiryWarning.show}
+        onOpenChange={(open) => {
+          if (!open) handleFixExpiryWarning();
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="w-6 h-6" />
+              賞味期限エラー
+            </DialogTitle>
+            <DialogDescription>
+              {expiryWarning.item && (
+                <>
+                  <span className="font-medium text-foreground">
+                    {expiryWarning.item.label}
+                  </span>
+                  が製造日より前の日付になっています。
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-red-600 dark:text-red-400">賞味期限</span>
+                <span className="text-lg font-bold text-red-700 dark:text-red-300">
+                  {expiryWarning.expiryDate || '-'}
+                </span>
+              </div>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">製造日</span>
+                <span className="text-lg font-medium text-foreground">
+                  {expiryWarning.productionDate || '未入力'}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="text-sm text-muted-foreground mb-4">
+            このまま続けますか？それとも確認して修正しますか？
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={handleFixExpiryWarning}>
+              確認して修正
+            </Button>
+            <Button
+              onClick={handleAcknowledgeExpiryWarning}
+              className="bg-red-600 hover:bg-red-700"
             >
               このまま続ける
             </Button>
