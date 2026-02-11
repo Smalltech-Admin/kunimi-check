@@ -1223,26 +1223,29 @@ export default function CheckPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-600">
               <AlertTriangle className="w-6 h-6" />
-              製造日の確認
+              確認してください
             </DialogTitle>
             <DialogDescription>
-              製造日が今日ではありません。この日付で入力を続けますか？
+              製造日が本日の日付ではありません。
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+              <p className="text-3xl font-bold text-amber-700 dark:text-amber-300">
                 {productionDateWarning.date}
               </p>
               <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">入力された製造日</p>
             </div>
+          </div>
+          <div className="text-sm text-muted-foreground mb-4">
+            この日付で続けますか？それとも修正しますか？
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
               variant="outline"
               onClick={() => setProductionDateWarning({ show: false, date: '', formKey: '' })}
             >
-              キャンセル
+              修正する
             </Button>
             <Button
               onClick={() => {
@@ -1254,7 +1257,7 @@ export default function CheckPage() {
               }}
               className="bg-amber-600 hover:bg-amber-700"
             >
-              この日付で続ける
+              このまま続ける
             </Button>
           </DialogFooter>
         </DialogContent>
