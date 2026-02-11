@@ -260,6 +260,18 @@ export default function CheckPage() {
   // 重要項目ID（テンプレートから自動検出）
   const criticalItemIds = useMemo(() => getCriticalItemIds(sections), [sections]);
 
+  // 製造日の項目ID（テンプレートから動的に特定）
+  const productionDateItemId = useMemo(() => {
+    for (const section of sections) {
+      for (const item of section.items ?? []) {
+        if (item.type === 'date' && item.label === '製造日') {
+          return item.id;
+        }
+      }
+    }
+    return null;
+  }, [sections]);
+
   // 全項目（repeatable展開済み）
   const expandedItems = useMemo(
     () => expandAllItems(sections, rowCounts),
@@ -285,7 +297,10 @@ export default function CheckPage() {
         const inputDate = new Date(String(value));
         if (isNaN(inputDate.getTime())) return { invalid: false };
 
-        const prodDateStr = formData['production_date'] as string | undefined;
+        // テンプレートの製造日項目IDからformDataを参照
+        const prodDateStr = productionDateItemId
+          ? (formData[productionDateItemId] as string | undefined)
+          : undefined;
         if (prodDateStr) {
           const prodDate = new Date(prodDateStr);
           prodDate.setHours(0, 0, 0, 0);
@@ -318,7 +333,7 @@ export default function CheckPage() {
       }
       return { invalid: false };
     },
-    [formData]
+    [formData, productionDateItemId]
   );
 
   // エラー一覧を計算
@@ -390,7 +405,7 @@ export default function CheckPage() {
   const handleItemChange = useCallback(
     (formKey: string, value: ItemValue) => {
       // 製造日の入力チェック
-      if (formKey === 'production_date' && value && typeof value === 'string') {
+      if (productionDateItemId && formKey === productionDateItemId && value && typeof value === 'string') {
         const inputDate = new Date(value);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -433,7 +448,7 @@ export default function CheckPage() {
         }
       }
     },
-    [expandedItems, isOutOfRange, acknowledgedErrors, criticalItemIds]
+    [expandedItems, isOutOfRange, acknowledgedErrors, criticalItemIds, productionDateItemId]
   );
 
   // 自分を選択（formKeyを直接受け取る）
@@ -516,7 +531,7 @@ export default function CheckPage() {
       template_id: templateId,
       product_id: product.id,
       line_id: lineUUID || null, // 空文字列ではなくnull
-      production_date: (formData['production_date'] as string) || now.split('T')[0],
+      production_date: ((productionDateItemId ? formData[productionDateItemId] : formData['production_date']) as string) || now.split('T')[0],
       batch_number: Number(formData['batch_number']) || 0,
       status: 'draft',
       current_editor_id: user.id,
@@ -743,7 +758,7 @@ export default function CheckPage() {
       update: (values: Record<string, unknown>) => { eq: (col: string, val: string) => Promise<{ error: unknown }> };
     }).update({
       line_id: lineUUID || null,
-      production_date: (formData['production_date'] as string) || new Date().toISOString().split('T')[0],
+      production_date: ((productionDateItemId ? formData[productionDateItemId] : formData['production_date']) as string) || new Date().toISOString().split('T')[0],
       batch_number: Number(formData['batch_number']) || 0,
       current_editor_id: user?.id || null,
     }).eq('id', recId);
@@ -791,7 +806,7 @@ export default function CheckPage() {
       submitted_at: now,
       current_editor_id: null,
       line_id: submitLineUUID || null,
-      production_date: (formData['production_date'] as string) || now.split('T')[0],
+      production_date: ((productionDateItemId ? formData[productionDateItemId] : formData['production_date']) as string) || now.split('T')[0],
       batch_number: Number(formData['batch_number']) || 0,
     }).eq('id', recId);
 
@@ -812,7 +827,7 @@ export default function CheckPage() {
       details: {
         product_id: product?.id,
         product_code: productId,
-        production_date: formData['production_date'],
+        production_date: (productionDateItemId ? formData[productionDateItemId] : formData['production_date']),
         batch_number: formData['batch_number'],
       },
       ip_address: null,
@@ -962,7 +977,7 @@ export default function CheckPage() {
                 {product?.name || '新規チェック表'}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {formData['production_date'] || '日付未設定'}
+                {(productionDateItemId ? formData[productionDateItemId] : formData['production_date']) || '日付未設定'}
               </p>
             </div>
           </div>
@@ -1320,7 +1335,7 @@ export default function CheckPage() {
                 <div>
                   <p className="font-bold">{product?.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {formData['production_date'] || '日付未設定'}
+                    {(productionDateItemId ? formData[productionDateItemId] : formData['production_date']) || '日付未設定'}
                   </p>
                 </div>
               </div>
