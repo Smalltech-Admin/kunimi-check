@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { createClient } from '@/lib/supabase/client';
-import { generateCheckRecordPdf } from '@/lib/generatePdf';
+import { generateCheckRecordPdf, isIOSDevice } from '@/lib/generatePdf';
 import type { CheckRecordPDFData, ItemMeta } from '@/components/pdf/CheckRecordPDF';
 import type { User, Section } from '@/types';
 
@@ -66,7 +66,12 @@ export default function ApprovalDetailPage() {
   const [rejectReason, setRejectReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
-  const [ipadPdfMessage, setIpadPdfMessage] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  // iOS判定（クライアントサイドのみ）
+  useEffect(() => {
+    setIsIOS(isIOSDevice());
+  }, []);
 
   // ユーザー情報取得
   useEffect(() => {
@@ -278,9 +283,9 @@ export default function ApprovalDetailPage() {
     return false;
   };
 
-  // PDF出力
+  // PDF出力（PC専用）
   const handleDownloadPdf = useCallback(async () => {
-    if (!record) return;
+    if (!record || isIOS) return;
     setPdfGenerating(true);
 
     try {
@@ -305,17 +310,13 @@ export default function ApprovalDetailPage() {
         lineMap,
       };
 
-      const result = await generateCheckRecordPdf(pdfData);
-      if (result.openedInNewTab) {
-        setIpadPdfMessage(true);
-        setTimeout(() => setIpadPdfMessage(false), 5000);
-      }
+      await generateCheckRecordPdf(pdfData);
     } catch (err) {
       console.error('[ApprovalDetail] PDF generation error:', err);
     } finally {
       setPdfGenerating(false);
     }
-  }, [record, sections, formData, itemMeta, userMap, lineMap]);
+  }, [record, sections, formData, itemMeta, userMap, lineMap, isIOS]);
 
   // 承認処理
   const handleApprove = async () => {
@@ -432,18 +433,6 @@ export default function ApprovalDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col">
-      {/* iPad PDF notification */}
-      {ipadPdfMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="fixed top-0 left-0 right-0 z-[100] bg-emerald-600 text-white px-4 py-3 text-center text-sm font-medium shadow-lg"
-        >
-          PDFを新しいタブで開きました。共有ボタンから保存・印刷できます。
-        </motion.div>
-      )}
-
       {/* Fixed Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
@@ -462,19 +451,22 @@ export default function ApprovalDetailPage() {
               戻る
             </Button>
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDownloadPdf}
-                disabled={pdfGenerating}
-                className="text-muted-foreground"
-              >
-                {pdfGenerating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <FileDown className="w-4 h-4" />
-                )}
-              </Button>
+              {/* PDFボタン（PC専用） */}
+              {!isIOS && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDownloadPdf}
+                  disabled={pdfGenerating}
+                  className="text-muted-foreground"
+                >
+                  {pdfGenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileDown className="w-4 h-4" />
+                  )}
+                </Button>
+              )}
               <span className="px-3 py-1 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
                 承認待ち
               </span>

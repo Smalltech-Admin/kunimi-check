@@ -17,9 +17,10 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
-import { generateCheckRecordPdf } from '@/lib/generatePdf';
+import { generateCheckRecordPdf, isIOSDevice } from '@/lib/generatePdf';
 import type { CheckRecordPDFData, ItemMeta } from '@/components/pdf/CheckRecordPDF';
 import type { User, Section } from '@/types';
+import { Monitor } from 'lucide-react';
 
 interface RecordDetail {
   id: string;
@@ -59,7 +60,12 @@ export default function HistoryDetailPage() {
   const [lineMap, setLineMap] = useState<Map<string, string>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [pdfGenerating, setPdfGenerating] = useState(false);
-  const [ipadPdfMessage, setIpadPdfMessage] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  // iOS判定（クライアントサイドのみ）
+  useEffect(() => {
+    setIsIOS(isIOSDevice());
+  }, []);
 
   // Session
   useEffect(() => {
@@ -195,9 +201,9 @@ export default function HistoryDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, recordId]);
 
-  // PDF
+  // PDF（PC専用）
   const handleDownloadPdf = useCallback(async () => {
-    if (!record) return;
+    if (!record || isIOS) return;
     setPdfGenerating(true);
 
     try {
@@ -222,17 +228,13 @@ export default function HistoryDetailPage() {
         lineMap,
       };
 
-      const result = await generateCheckRecordPdf(pdfData);
-      if (result.openedInNewTab) {
-        setIpadPdfMessage(true);
-        setTimeout(() => setIpadPdfMessage(false), 5000);
-      }
+      await generateCheckRecordPdf(pdfData);
     } catch (err) {
       console.error('[HistoryDetail] PDF generation error:', err);
     } finally {
       setPdfGenerating(false);
     }
-  }, [record, sections, formData, itemMeta, userMap, lineMap]);
+  }, [record, sections, formData, itemMeta, userMap, lineMap, isIOS]);
 
   // Date formatting
   const formatDate = (dateStr: string) => {
@@ -329,18 +331,6 @@ export default function HistoryDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col">
-      {/* iPad PDF notification */}
-      {ipadPdfMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="fixed top-0 left-0 right-0 z-[100] bg-emerald-600 text-white px-4 py-3 text-center text-sm font-medium shadow-lg"
-        >
-          PDFを新しいタブで開きました。共有ボタンから保存・印刷できます。
-        </motion.div>
-      )}
-
       {/* Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
@@ -359,19 +349,22 @@ export default function HistoryDetailPage() {
               履歴
             </Button>
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDownloadPdf}
-                disabled={pdfGenerating}
-                className="text-muted-foreground"
-              >
-                {pdfGenerating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <FileDown className="w-4 h-4" />
-                )}
-              </Button>
+              {/* PDFボタン（PC専用） */}
+              {!isIOS && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDownloadPdf}
+                  disabled={pdfGenerating}
+                  className="text-muted-foreground"
+                >
+                  {pdfGenerating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileDown className="w-4 h-4" />
+                  )}
+                </Button>
+              )}
               {statusBadge}
             </div>
           </div>
@@ -566,30 +559,39 @@ export default function HistoryDetailPage() {
             </div>
           </motion.div>
 
-          {/* PDF Download (large button at bottom) */}
+          {/* PDF Download (large button at bottom) - PC専用 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: (sections.length + 1) * 0.05 }}
           >
-            <Button
-              variant="outline"
-              className="w-full h-14 text-base gap-2"
-              onClick={handleDownloadPdf}
-              disabled={pdfGenerating}
-            >
-              {pdfGenerating ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  PDF生成中...
-                </>
-              ) : (
-                <>
-                  <FileDown className="w-5 h-5" />
-                  PDF出力
-                </>
-              )}
-            </Button>
+            {isIOS ? (
+              <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 text-center">
+                <Monitor className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  PDF出力はPCから行ってください
+                </p>
+              </div>
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full h-14 text-base gap-2"
+                onClick={handleDownloadPdf}
+                disabled={pdfGenerating}
+              >
+                {pdfGenerating ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    PDF生成中...
+                  </>
+                ) : (
+                  <>
+                    <FileDown className="w-5 h-5" />
+                    PDF出力
+                  </>
+                )}
+              </Button>
+            )}
           </motion.div>
         </div>
       </main>
