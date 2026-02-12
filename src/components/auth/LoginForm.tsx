@@ -103,7 +103,7 @@ export function LoginForm({ users, onSubmit, isLoading, error }: LoginFormProps)
         <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-sm text-destructive text-center bg-destructive/10 py-2 px-4 rounded-lg"
+          className="text-base text-destructive text-center bg-destructive/10 py-3 px-4 rounded-lg"
         >
           {error}
         </motion.p>
@@ -111,23 +111,23 @@ export function LoginForm({ users, onSubmit, isLoading, error }: LoginFormProps)
 
       <Button
         type="submit"
-        className="w-full h-14 text-base rounded-xl shadow-md"
+        className="w-full h-14 text-lg rounded-xl shadow-md"
         disabled={!selectedUserId || isLoading}
       >
         {isLoading ? (
           <>
-            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+            <Loader2 className="h-6 w-6 mr-2 animate-spin" />
             ログイン中...
           </>
         ) : (
           <>
-            <LogIn className="h-5 w-5 mr-2" />
+            <LogIn className="h-6 w-6 mr-2" />
             ログイン
           </>
         )}
       </Button>
 
-      <p className="text-xs text-muted-foreground text-center">
+      <p className="text-sm text-muted-foreground text-center">
         デモ用：パスワードは省略可能です
       </p>
     </motion.form>

@@ -243,8 +243,8 @@ export default function HistoryPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">読み込み中...</p>
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg">読み込み中...</p>
         </div>
       </div>
     );
@@ -260,29 +260,28 @@ export default function HistoryPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4"
+            className="mb-6"
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <History className="w-6 h-6 text-primary" />
-                <h1 className="text-2xl font-bold text-foreground">履歴</h1>
+              <div className="flex items-center gap-3">
+                <History className="w-8 h-8 text-primary" />
+                <h1 className="text-3xl font-bold text-foreground">履歴</h1>
               </div>
               <Button
                 variant="outline"
-                size="sm"
                 onClick={() => setShowFilter(!showFilter)}
-                className="gap-2"
+                className="gap-2 h-12 text-base"
               >
-                <Filter className="w-4 h-4" />
+                <Filter className="w-5 h-5" />
                 絞り込み
                 {showFilter ? (
-                  <ChevronUp className="w-4 h-4" />
+                  <ChevronUp className="w-5 h-5" />
                 ) : (
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-5 h-5" />
                 )}
               </Button>
             </div>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-2 text-lg">
               承認済み・差戻しのチェック表を確認
             </p>
           </motion.div>
@@ -296,17 +295,17 @@ export default function HistoryPage() {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 mb-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 mb-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <Label className="text-sm font-medium mb-2 block">製品</Label>
+                      <Label className="text-base font-medium mb-2 block">製品</Label>
                       <Select
                         value={filter.productId}
                         onValueChange={(value) =>
                           setFilter((prev) => ({ ...prev, productId: value }))
                         }
                       >
-                        <SelectTrigger className="h-11">
+                        <SelectTrigger className="h-12">
                           <SelectValue placeholder="すべての製品" />
                         </SelectTrigger>
                         <SelectContent>
@@ -321,7 +320,7 @@ export default function HistoryPage() {
                     </div>
 
                     <div>
-                      <Label className="text-sm font-medium mb-2 block">ステータス</Label>
+                      <Label className="text-base font-medium mb-2 block">ステータス</Label>
                       <Select
                         value={filter.status}
                         onValueChange={(value) =>
@@ -331,7 +330,7 @@ export default function HistoryPage() {
                           }))
                         }
                       >
-                        <SelectTrigger className="h-11">
+                        <SelectTrigger className="h-12">
                           <SelectValue placeholder="すべて" />
                         </SelectTrigger>
                         <SelectContent>
@@ -343,32 +342,32 @@ export default function HistoryPage() {
                     </div>
 
                     <div>
-                      <Label className="text-sm font-medium mb-2 block">期間（開始）</Label>
+                      <Label className="text-base font-medium mb-2 block">期間（開始）</Label>
                       <Input
                         type="date"
                         value={filter.startDate}
                         onChange={(e) =>
                           setFilter((prev) => ({ ...prev, startDate: e.target.value }))
                         }
-                        className="h-11"
+                        className="h-12"
                       />
                     </div>
 
                     <div>
-                      <Label className="text-sm font-medium mb-2 block">期間（終了）</Label>
+                      <Label className="text-base font-medium mb-2 block">期間（終了）</Label>
                       <Input
                         type="date"
                         value={filter.endDate}
                         onChange={(e) =>
                           setFilter((prev) => ({ ...prev, endDate: e.target.value }))
                         }
-                        className="h-11"
+                        className="h-12"
                       />
                     </div>
                   </div>
 
-                  <div className="mt-4 flex justify-end">
-                    <Button variant="ghost" size="sm" onClick={handleResetFilter}>
+                  <div className="mt-5 flex justify-end">
+                    <Button variant="ghost" onClick={handleResetFilter}>
                       フィルターをリセット
                     </Button>
                   </div>
@@ -378,8 +377,8 @@ export default function HistoryPage() {
           </AnimatePresence>
 
           {/* Results Count */}
-          <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
-            <Search className="w-4 h-4" />
+          <div className="mb-4 flex items-center gap-2 text-base text-muted-foreground">
+            <Search className="w-5 h-5" />
             <span>{records.length} 件の履歴</span>
           </div>
 
@@ -395,61 +394,61 @@ export default function HistoryPage() {
                   className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden cursor-pointer active:scale-[0.99] transition-transform"
                   onClick={() => router.push(`/history/${record.id}`)}
                 >
-                  <div className="p-4">
+                  <div className="p-5">
                     {/* Product & Status */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-4">
                         {record.product_icon && (
-                          <span className="text-3xl">{record.product_icon}</span>
+                          <span className="text-4xl">{record.product_icon}</span>
                         )}
                         <div>
-                          <h3 className="font-bold text-lg text-foreground">
+                          <h3 className="font-bold text-xl text-foreground">
                             {record.product_name}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-base text-muted-foreground">
                             バッチ #{record.batch_number}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         {record.status === 'approved' ? (
-                          <span className="px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" />
+                          <span className="px-4 py-1.5 text-sm font-medium bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1.5">
+                            <CheckCircle className="w-4 h-4" />
                             承認済み
                           </span>
                         ) : (
-                          <span className="px-3 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full flex items-center gap-1">
-                            <XCircle className="w-3 h-3" />
+                          <span className="px-4 py-1.5 text-sm font-medium bg-red-100 text-red-700 rounded-full flex items-center gap-1.5">
+                            <XCircle className="w-4 h-4" />
                             差戻し
                           </span>
                         )}
-                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                        <ChevronRight className="w-6 h-6 text-muted-foreground" />
                       </div>
                     </div>
 
                     {/* Details */}
-                    <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="grid grid-cols-2 gap-4 text-base">
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
+                        <Calendar className="w-5 h-5" />
                         <span>{formatDate(record.production_date)}</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <UserIcon className="w-4 h-4" />
+                        <UserIcon className="w-5 h-5" />
                         <span>提出: {record.submitted_by_name}</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <Package className="w-4 h-4" />
+                        <Package className="w-5 h-5" />
                         <span>{record.line_name}</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         {record.status === 'approved' ? (
                           <>
-                            <CheckCircle className="w-4 h-4 text-emerald-500" />
+                            <CheckCircle className="w-5 h-5 text-emerald-500" />
                             <span>承認: {record.approved_by_name}</span>
                           </>
                         ) : (
                           <>
-                            <XCircle className="w-4 h-4 text-red-500" />
+                            <XCircle className="w-5 h-5 text-red-500" />
                             <span>差戻: {record.rejected_by_name}</span>
                           </>
                         )}
@@ -457,8 +456,8 @@ export default function HistoryPage() {
                     </div>
 
                     {/* Timestamp */}
-                    <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
-                      <p className="text-xs text-muted-foreground">
+                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                      <p className="text-sm text-muted-foreground">
                         {record.status === 'approved'
                           ? `承認日時: ${formatDateTime(record.approved_at)}`
                           : `差戻し日時: ${formatDateTime(record.rejected_at)}`}
@@ -474,11 +473,11 @@ export default function HistoryPage() {
               animate={{ opacity: 1 }}
               className="text-center py-16"
             >
-              <History className="w-16 h-16 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-              <p className="text-lg text-muted-foreground">
+              <History className="w-20 h-20 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
+              <p className="text-xl text-muted-foreground">
                 履歴がありません
               </p>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-base text-muted-foreground mt-2">
                 承認または差戻しされたチェック表がここに表示されます
               </p>
             </motion.div>

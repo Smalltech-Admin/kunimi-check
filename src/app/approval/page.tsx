@@ -170,8 +170,8 @@ export default function ApprovalListPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">読み込み中...</p>
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg">読み込み中...</p>
         </div>
       </div>
     );
@@ -189,13 +189,13 @@ export default function ApprovalListPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
+            className="mb-8"
           >
-            <div className="flex items-center gap-2">
-              <ClipboardCheck className="w-6 h-6 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">承認待ち一覧</h1>
+            <div className="flex items-center gap-3">
+              <ClipboardCheck className="w-8 h-8 text-primary" />
+              <h1 className="text-3xl font-bold text-foreground">承認待ち一覧</h1>
             </div>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-2 text-lg">
               提出されたチェック表を確認・承認してください
             </p>
           </motion.div>
@@ -211,39 +211,39 @@ export default function ApprovalListPage() {
                   transition={{ delay: index * 0.05 }}
                   className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"
                 >
-                  <div className="p-4">
+                  <div className="p-5">
                     {/* Product & Batch */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-4">
                         {record.product_icon && (
-                          <span className="text-3xl">{record.product_icon}</span>
+                          <span className="text-4xl">{record.product_icon}</span>
                         )}
                         <div>
-                          <h3 className="font-bold text-lg text-foreground">
+                          <h3 className="font-bold text-xl text-foreground">
                             {record.product_name}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-base text-muted-foreground">
                             バッチ #{record.batch_number}
                           </p>
                         </div>
                       </div>
-                      <span className="px-3 py-1 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
+                      <span className="px-4 py-1.5 text-sm font-medium bg-amber-100 text-amber-700 rounded-full">
                         承認待ち
                       </span>
                     </div>
 
                     {/* Details */}
-                    <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+                    <div className="grid grid-cols-2 gap-4 text-base mb-5">
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
+                        <Calendar className="w-5 h-5" />
                         <span>製造日: {formatDate(record.production_date)}</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
-                        <UserIcon className="w-4 h-4" />
+                        <UserIcon className="w-5 h-5" />
                         <span>提出: {record.submitted_by_name}</span>
                       </div>
                       <div className="col-span-2 flex items-center gap-2 text-muted-foreground">
-                        <Package className="w-4 h-4" />
+                        <Package className="w-5 h-5" />
                         <span>提出日時: {formatDateTime(record.submitted_at)}</span>
                       </div>
                     </div>
@@ -251,10 +251,10 @@ export default function ApprovalListPage() {
                     {/* Action Button */}
                     <Button
                       onClick={() => handleViewDetail(record.id)}
-                      className="w-full h-12 text-base"
+                      className="w-full h-14 text-lg"
                     >
                       確認する
-                      <ChevronRight className="w-5 h-5 ml-1" />
+                      <ChevronRight className="w-6 h-6 ml-1" />
                     </Button>
                   </div>
                 </motion.div>
@@ -266,11 +266,11 @@ export default function ApprovalListPage() {
               animate={{ opacity: 1 }}
               className="text-center py-16"
             >
-              <ClipboardCheck className="w-16 h-16 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-              <p className="text-lg text-muted-foreground">
+              <ClipboardCheck className="w-20 h-20 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
+              <p className="text-xl text-muted-foreground">
                 承認待ちのチェック表はありません
               </p>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-base text-muted-foreground mt-2">
                 新しい提出があると、ここに表示されます
               </p>
             </motion.div>

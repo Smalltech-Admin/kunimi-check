@@ -997,8 +997,8 @@ export default function CheckPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">読み込み中...</p>
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg">読み込み中...</p>
         </div>
       </div>
     );
@@ -1008,9 +1008,9 @@ export default function CheckPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center space-y-4">
-          <XCircle className="w-12 h-12 text-red-400 mx-auto" />
-          <p className="text-lg font-medium text-foreground">テンプレートが見つかりません</p>
-          <p className="text-muted-foreground">この製品のチェック表テンプレートが登録されていません。</p>
+          <XCircle className="w-14 h-14 text-red-400 mx-auto" />
+          <p className="text-xl font-medium text-foreground">テンプレートが見つかりません</p>
+          <p className="text-muted-foreground text-lg">この製品のチェック表テンプレートが登録されていません。</p>
           <Button onClick={handleBack}>ホームに戻る</Button>
         </div>
       </div>
@@ -1031,24 +1031,24 @@ export default function CheckPage() {
             <Button
               variant="outline"
               onClick={handleBack}
-              className="h-11 px-4 text-sm font-medium border-2 border-slate-300 hover:border-slate-500 hover:bg-slate-100 transition-colors"
+              className="h-12 px-5 text-base font-medium border-2 border-slate-300 hover:border-slate-500 hover:bg-slate-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               戻る
             </Button>
 
             {/* Progress with error badge */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <span
-                className={`text-lg font-bold ${
+                className={`text-xl font-bold ${
                   errors.length > 0 ? 'text-red-600' : 'text-primary'
                 }`}
               >
                 {completedItems}/{totalItems}項目 {totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0}%
               </span>
               {errors.length > 0 && (
-                <span className="flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 text-sm font-medium rounded-full">
-                  <AlertTriangle className="w-3.5 h-3.5" />
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-700 text-base font-medium rounded-full">
+                  <AlertTriangle className="w-4 h-4" />
                   {errors.length}
                 </span>
               )}
@@ -1056,13 +1056,13 @@ export default function CheckPage() {
           </div>
 
           {/* Product info */}
-          <div className="mt-2 flex items-center gap-2">
-            {product?.icon && <span className="text-2xl">{product.icon}</span>}
+          <div className="mt-3 flex items-center gap-3">
+            {product?.icon && <span className="text-3xl">{product.icon}</span>}
             <div>
-              <h1 className="font-bold text-lg text-foreground">
+              <h1 className="font-bold text-xl text-foreground">
                 {product?.name || '新規チェック表'}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 {(productionDateItemId ? formData[productionDateItemId] : formData['production_date']) || '日付未設定'}
               </p>
             </div>

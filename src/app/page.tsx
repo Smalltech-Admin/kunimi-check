@@ -120,23 +120,23 @@ export default function LoginPage() {
         className="w-full max-w-md space-y-8"
       >
         {/* Logo Area */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-4">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-            className="mb-2"
+            className="mb-3"
           >
             <img
               src="/logo-kunimix.png"
               alt="KUNIMIX"
-              className="h-20 w-auto mx-auto"
+              className="h-24 w-auto mx-auto"
             />
           </motion.div>
-          <h1 className="text-3xl font-bold text-emerald-600">
+          <h1 className="text-4xl font-bold text-emerald-600">
             くにみ農産加工
           </h1>
-          <p className="text-slate-500 text-lg">
+          <p className="text-slate-500 text-xl">
             製造工程チェックシステム
           </p>
         </div>
@@ -149,16 +149,16 @@ export default function LoginPage() {
           className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 space-y-6"
         >
           {/* Mode Indicator */}
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+          <div className="flex items-center justify-center gap-3 text-muted-foreground">
             {mode === 'qr' ? (
               <>
-                <QrCode className="w-5 h-5" />
-                <span className="font-medium">QRコードでログイン</span>
+                <QrCode className="w-6 h-6" />
+                <span className="font-medium text-lg">QRコードでログイン</span>
               </>
             ) : (
               <>
-                <KeyRound className="w-5 h-5" />
-                <span className="font-medium">ID・パスワードでログイン</span>
+                <KeyRound className="w-6 h-6" />
+                <span className="font-medium text-lg">ID・パスワードでログイン</span>
               </>
             )}
           </div>
@@ -201,7 +201,7 @@ export default function LoginPage() {
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-sm text-destructive text-center bg-destructive/10 py-2 px-4 rounded-lg"
+              className="text-base text-destructive text-center bg-destructive/10 py-3 px-4 rounded-lg"
             >
               {error}
             </motion.p>
@@ -212,7 +212,7 @@ export default function LoginPage() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200 dark:border-slate-700" />
             </div>
-            <div className="relative flex justify-center text-sm">
+            <div className="relative flex justify-center text-base">
               <span className="px-4 bg-white dark:bg-slate-800 text-muted-foreground">
                 または
               </span>
@@ -222,16 +222,16 @@ export default function LoginPage() {
           {/* Mode Toggle Button */}
           <button
             onClick={toggleMode}
-            className="w-full py-3 text-primary hover:text-primary/80 font-medium transition-colors flex items-center justify-center gap-2"
+            className="w-full py-4 text-primary hover:text-primary/80 font-medium text-lg transition-colors flex items-center justify-center gap-3"
           >
             {mode === 'qr' ? (
               <>
-                <KeyRound className="w-4 h-4" />
+                <KeyRound className="w-5 h-5" />
                 IDとパスワードでログイン
               </>
             ) : (
               <>
-                <QrCode className="w-4 h-4" />
+                <QrCode className="w-5 h-5" />
                 QRコードでログイン
               </>
             )}
@@ -243,7 +243,7 @@ export default function LoginPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center text-xs text-muted-foreground"
+          className="text-center text-sm text-muted-foreground"
         >
           &copy; 2026 くにみ農産加工 - FSSC22000認証工場
         </motion.p>

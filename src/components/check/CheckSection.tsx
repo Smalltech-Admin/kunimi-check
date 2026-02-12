@@ -49,11 +49,11 @@ export function CheckSection({
             : 'bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700/50'
         )}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {/* Complete/Error indicator */}
           <div
             className={cn(
-              'w-8 h-8 rounded-full flex items-center justify-center',
+              'w-10 h-10 rounded-full flex items-center justify-center',
               hasErrors
                 ? 'bg-red-500 text-white'
                 : isComplete
@@ -62,11 +62,11 @@ export function CheckSection({
             )}
           >
             {hasErrors ? (
-              <AlertTriangle className="w-4 h-4" />
+              <AlertTriangle className="w-5 h-5" />
             ) : isComplete ? (
-              <CheckCircle2 className="w-5 h-5" />
+              <CheckCircle2 className="w-6 h-6" />
             ) : (
-              <span className="text-sm font-medium">
+              <span className="text-base font-medium">
                 {completedCount}/{totalCount}
               </span>
             )}
@@ -77,20 +77,20 @@ export function CheckSection({
             <div className="flex items-center gap-2">
               <h3
                 className={cn(
-                  'font-bold',
+                  'font-bold text-lg',
                   hasErrors ? 'text-red-700 dark:text-red-300' : 'text-foreground'
                 )}
               >
                 {section.name}
               </h3>
               {hasErrors && (
-                <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-full">
+                <span className="text-sm px-2 py-1 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-full">
                   {errorCount}件エラー
                 </span>
               )}
             </div>
             {section.description && (
-              <p className="text-sm text-muted-foreground">{section.description}</p>
+              <p className="text-base text-muted-foreground">{section.description}</p>
             )}
           </div>
         </div>
@@ -102,7 +102,7 @@ export function CheckSection({
         >
           <ChevronDown
             className={cn(
-              'w-5 h-5',
+              'w-6 h-6',
               hasErrors ? 'text-red-500' : 'text-muted-foreground'
             )}
           />

@@ -262,15 +262,15 @@ export function CheckItem({
 
       {/* エラーメッセージ */}
       {hasError && errorMessage && (
-        <p className="text-sm text-red-600 dark:text-red-400 mt-2 flex items-center gap-1">
-          <AlertCircle className="w-4 h-4" />
+        <p className="text-base text-red-600 dark:text-red-400 mt-2 flex items-center gap-2">
+          <AlertCircle className="w-5 h-5" />
           {errorMessage}
         </p>
       )}
 
       {/* ヒント（エラーがない場合のみ表示） */}
       {!hasError && item.hint && item.type !== 'text' && (
-        <p className="text-xs text-muted-foreground mt-2">{item.hint}</p>
+        <p className="text-sm text-muted-foreground mt-2">{item.hint}</p>
       )}
     </div>
   );

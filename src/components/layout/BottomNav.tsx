@@ -25,7 +25,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
     {
       href: '/home',
       label: 'ホーム',
-      icon: <Home className="h-7 w-7" />,
+      icon: <Home className="h-8 w-8" />,
     },
   ];
 
@@ -34,7 +34,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
     navItems.push({
       href: '/approval',
       label: '承認待ち',
-      icon: <ClipboardCheck className="h-7 w-7" />,
+      icon: <ClipboardCheck className="h-8 w-8" />,
       badge: pendingCount > 0 ? pendingCount : undefined,
     });
   }
@@ -42,7 +42,7 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
   navItems.push({
     href: '/history',
     label: '履歴',
-    icon: <History className="h-7 w-7" />,
+    icon: <History className="h-8 w-8" />,
   });
 
   return (
@@ -69,13 +69,13 @@ export function BottomNav({ isManager = false, pendingCount = 0 }: BottomNavProp
               <div className="relative">
                 {item.icon}
                 {item.badge && (
-                  <span className="absolute -top-1 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
+                  <span className="absolute -top-1 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-sm font-bold">
                     {item.badge > 9 ? '9+' : item.badge}
                   </span>
                 )}
               </div>
               <span className={cn(
-                'text-sm mt-1 font-medium',
+                'text-base mt-1 font-medium',
                 isActive && 'text-primary'
               )}>
                 {item.label}

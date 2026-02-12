@@ -33,21 +33,21 @@ export function ProductCard({
       {/* Product Header */}
       <div className="p-6 text-center border-b border-slate-100 dark:border-slate-700">
         {icon && (
-          <span className="text-5xl block mb-3" role="img" aria-label={name}>
+          <span className="text-6xl block mb-3" role="img" aria-label={name}>
             {icon}
           </span>
         )}
-        <h3 className="text-lg font-bold text-foreground">{name}</h3>
+        <h3 className="text-xl font-bold text-foreground">{name}</h3>
       </div>
 
       {/* Actions */}
-      <div className="p-4 space-y-3">
+      <div className="p-5 space-y-3">
         {/* New Create Button */}
         <Button
           onClick={() => onNewCreate(productId)}
-          className="w-full h-12 text-base bg-primary hover:bg-primary/90"
+          className="w-full h-14 text-lg bg-primary hover:bg-primary/90"
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Plus className="w-6 h-6 mr-2" />
           新規作成
         </Button>
 
@@ -56,11 +56,11 @@ export function ProductCard({
           <Button
             variant="outline"
             onClick={() => onViewDrafts(productId)}
-            className="w-full h-10 text-sm relative"
+            className="w-full h-12 text-base relative"
           >
-            <FileEdit className="w-4 h-4 mr-2" />
+            <FileEdit className="w-5 h-5 mr-2" />
             作成中のチェック表
-            <span className="absolute right-3 flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-white text-xs font-bold">
+            <span className="absolute right-3 flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 text-white text-sm font-bold">
               {draftCount}
             </span>
           </Button>

@@ -141,10 +141,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* 40-60代向け: ベースフォントサイズを大きく */
+    font-size: 18px;
+  }
   body {
     @apply bg-background text-foreground;
     /* Prevent pull-to-refresh on mobile */
     overscroll-behavior-y: contain;
+    /* 読みやすい行間 */
+    line-height: 1.6;
   }
   /* Touch-friendly defaults for tablets */
   button,
@@ -152,8 +158,8 @@
   input[type="checkbox"],
   input[type="radio"],
   select {
-    min-height: 48px;
-    min-width: 48px;
+    min-height: 52px;
+    min-width: 52px;
   }
   /* Larger touch targets for inputs */
   input[type="text"],
@@ -162,8 +168,8 @@
   input[type="time"],
   input[type="password"],
   textarea {
-    min-height: 48px;
-    font-size: 16px; /* Prevent iOS zoom */
+    min-height: 52px;
+    font-size: 18px; /* Prevent iOS zoom + 大きめ */
   }
 }
 

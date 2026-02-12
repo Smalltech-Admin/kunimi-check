@@ -134,8 +134,8 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">読み込み中...</p>
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground text-lg">読み込み中...</p>
         </div>
       </div>
     );
@@ -153,16 +153,16 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
+            className="mb-8"
           >
-            <h1 className="text-2xl font-bold text-foreground">製品を選択</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-3xl font-bold text-foreground">製品を選択</h1>
+            <p className="text-muted-foreground mt-2 text-lg">
               チェック表を開始する製品を選んでください
             </p>
           </motion.div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             {products.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -185,7 +185,7 @@ export default function HomePage() {
           {/* No Products Message */}
           {products.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">製品が登録されていません</p>
+              <p className="text-muted-foreground text-lg">製品が登録されていません</p>
             </div>
           )}
         </div>
@@ -203,22 +203,22 @@ export default function HomePage() {
           <DialogHeader>
             <DialogTitle>編集する下書きを選択</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+          <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {draftList.map((draft) => (
               <Button
                 key={draft.id}
                 variant="outline"
-                className="w-full justify-start h-auto py-3 px-4"
+                className="w-full justify-start h-auto py-4 px-5"
                 onClick={() => {
                   router.push(`/check/${draft.id}?product=${selectedProductCode}`);
                   setDraftModalOpen(false);
                 }}
               >
                 <div className="text-left">
-                  <p className="font-medium">
+                  <p className="font-medium text-lg">
                     {draft.production_date || '日付未設定'} / バッチ#{draft.batch_number || '-'}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     作成: {new Date(draft.created_at).toLocaleString('ja-JP')}
                   </p>
                 </div>
