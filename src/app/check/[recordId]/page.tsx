@@ -1271,9 +1271,9 @@ export default function CheckPage() {
         </DialogContent>
       </Dialog>
 
-      {/* 賞味期限エラー警告 - 大葉ミンチはフルスクリーン、その他は通常ダイアログ */}
-      {expiryWarning.show && (product?.product_code === 'P001' || productId === 'P001') ? (
-        /* 大葉ミンチ用: フルスクリーン警告オーバーレイ（Dialogを使わない） */
+      {/* 賞味期限エラー警告 - 大葉ミンチ（簡易版）P002はフルスクリーン、その他は通常ダイアログ */}
+      {expiryWarning.show && (product?.product_code === 'P002' || productId === 'P002') ? (
+        /* 大葉ミンチ（簡易版）用: フルスクリーン警告オーバーレイ（Dialogを使わない） */
         <div
           className="fixed inset-0 z-[9999] bg-red-600 flex flex-col"
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}
