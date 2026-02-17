@@ -36,7 +36,7 @@ export function OkNgToggle({ value, onChange, disabled = false, size = 'default'
         className={cn(
           'flex items-center justify-center font-bold transition-all border-2',
           isCompact
-            ? 'gap-1 w-16 h-10 rounded-lg text-sm'
+            ? 'gap-1 w-16 h-10 rounded-lg text-base'
             : 'gap-2 w-24 h-14 rounded-xl text-lg',
           value === 'ok'
             ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg'
@@ -57,7 +57,7 @@ export function OkNgToggle({ value, onChange, disabled = false, size = 'default'
         className={cn(
           'flex items-center justify-center font-bold transition-all border-2',
           isCompact
-            ? 'gap-1 w-16 h-10 rounded-lg text-sm'
+            ? 'gap-1 w-16 h-10 rounded-lg text-base'
             : 'gap-2 w-24 h-14 rounded-xl text-lg',
           value === 'ng'
             ? 'bg-red-500 border-red-500 text-white shadow-lg'

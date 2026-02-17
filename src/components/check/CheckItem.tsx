@@ -44,7 +44,7 @@ export function CheckItem({
   compact = false,
 }: CheckItemProps) {
   const inputHeight = compact ? 'h-10' : 'h-12';
-  const inputText = compact ? 'text-sm' : 'text-base';
+  const inputText = compact ? 'text-lg' : 'text-base';
   const btnHeight = compact ? 'h-10 px-3' : 'h-12 px-4';
 
   const renderInput = () => {
@@ -84,7 +84,7 @@ export function CheckItem({
               value={(value as string) || ''}
               onChange={(e) => onChange(e.target.value || null)}
               disabled={disabled}
-              className={cn('flex-1', inputHeight, compact ? 'text-sm' : 'text-lg')}
+              className={cn('flex-1', inputHeight, compact ? 'text-lg' : 'text-lg')}
             />
             {item.allow_now_button && (
               <Button
@@ -270,7 +270,7 @@ export function CheckItem({
 
       {/* ヒント（エラーがない場合のみ表示） */}
       {!hasError && item.hint && item.type !== 'text' && (
-        <p className="text-sm text-muted-foreground mt-2">{item.hint}</p>
+        <p className="text-lg text-muted-foreground mt-2">{item.hint}</p>
       )}
     </div>
   );

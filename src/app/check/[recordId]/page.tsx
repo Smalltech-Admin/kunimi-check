@@ -1080,8 +1080,8 @@ export default function CheckPage() {
         </div>
       </motion.header>
 
-      {/* Scrollable Content */}
-      <main className="flex-1 overflow-y-auto pb-32">
+      {/* Scrollable Content - pb-56 ensures content doesn't hide behind fixed footer */}
+      <main className="flex-1 overflow-y-auto pb-56">
         <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
           {sections.map((section, index) => {
             const completion = getSectionCompletion(section);
@@ -1155,13 +1155,13 @@ export default function CheckPage() {
       <motion.footer
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]"
         style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
       >
         <div className="max-w-2xl mx-auto">
           {/* エラーメッセージ */}
           {errors.length > 0 && (
-            <div className="mb-3 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
+            <div className="mb-3 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center gap-2 text-base text-red-700 dark:text-red-300">
               <XCircle className="w-4 h-4 flex-shrink-0" />
               <span>範囲外の値が {errors.length} 件あります。修正してください。</span>
             </div>
@@ -1251,10 +1251,10 @@ export default function CheckPage() {
                 {criticalWarning.value}
                 {criticalWarning.item?.unit || ''}
               </p>
-              <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">入力値</p>
+              <p className="text-base text-amber-600 dark:text-amber-400 mt-1">入力値</p>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground mb-4">
+          <div className="text-base text-muted-foreground mb-4">
             このまま続けますか？それとも確認して修正しますか？
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
@@ -1271,9 +1271,9 @@ export default function CheckPage() {
         </DialogContent>
       </Dialog>
 
-      {/* 賞味期限エラー警告 - 大葉ミンチ（簡易版）P002はフルスクリーン、その他は通常ダイアログ */}
-      {expiryWarning.show && (product?.product_code === 'P002' || productId === 'P002') ? (
-        /* 大葉ミンチ（簡易版）用: フルスクリーン警告オーバーレイ（Dialogを使わない） */
+      {/* 賞味期限エラー警告 - 大葉ミンチP001はフルスクリーン、大葉ミンチ（簡易版）P002は通常ダイアログ */}
+      {expiryWarning.show && (product?.product_code === 'P001' || productId === 'P001') ? (
+        /* 大葉ミンチ用: フルスクリーン警告オーバーレイ（Dialogを使わない） */
         <div
           className="fixed inset-0 z-[9999] bg-red-600 flex flex-col"
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}
@@ -1291,22 +1291,18 @@ export default function CheckPage() {
             </p>
           </div>
 
-          {/* 中央: 日付表示 */}
-          <div className="px-6 md:px-16 py-6 space-y-4">
-            <div className="bg-white rounded-3xl p-6 md:p-10 shadow-2xl">
-              <div className="text-center">
-                <span className="text-lg md:text-2xl font-bold text-red-600 uppercase tracking-wider">賞味期限</span>
-                <div className="text-5xl md:text-7xl font-black text-red-700 mt-4">
-                  {expiryWarning.expiryDate || '-'}
-                </div>
+          {/* 中央: 日付表示（情報表示のみ、ボタンではない） */}
+          <div className="px-6 md:px-16 py-6 space-y-6">
+            <div className="text-center">
+              <span className="text-lg md:text-2xl font-bold text-red-200 uppercase tracking-wider">賞味期限</span>
+              <div className="text-5xl md:text-7xl font-black text-white mt-2 border-b-4 border-red-300/50 pb-4">
+                {expiryWarning.expiryDate || '-'}
               </div>
             </div>
-            <div className="bg-red-500/60 rounded-3xl p-5 md:p-8">
-              <div className="text-center">
-                <span className="text-base md:text-xl font-semibold text-red-100">製造日</span>
-                <div className="text-3xl md:text-5xl font-bold text-white mt-3">
-                  {expiryWarning.productionDate || '未入力'}
-                </div>
+            <div className="text-center">
+              <span className="text-base md:text-xl font-semibold text-red-200/80">製造日</span>
+              <div className="text-3xl md:text-5xl font-bold text-red-100 mt-2">
+                {expiryWarning.productionDate || '未入力'}
               </div>
             </div>
           </div>
@@ -1315,7 +1311,7 @@ export default function CheckPage() {
           <div className="px-6 md:px-16 pb-10 pt-4 space-y-4">
             <Button
               onClick={handleFixExpiryWarning}
-              className="w-full h-20 md:h-24 text-2xl md:text-3xl font-black bg-white hover:bg-gray-100 text-red-600 rounded-3xl shadow-2xl"
+              className="w-full h-20 md:h-24 text-2xl md:text-3xl font-black bg-white hover:bg-gray-100 text-red-600 rounded-3xl shadow-2xl animate-pulse"
             >
               確認して修正する
             </Button>
@@ -1329,7 +1325,7 @@ export default function CheckPage() {
           </div>
         </div>
       ) : expiryWarning.show ? (
-        /* その他製品用: 通常の警告ダイアログ */
+        /* 大葉ミンチ（簡易版）P002およびその他製品用: 通常の警告ダイアログ */
         <Dialog
           open={expiryWarning.show}
           onOpenChange={(open) => {
@@ -1356,7 +1352,7 @@ export default function CheckPage() {
             <div className="py-4 space-y-3">
               <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-red-600 dark:text-red-400">賞味期限</span>
+                  <span className="text-base text-red-600 dark:text-red-400">賞味期限</span>
                   <span className="text-lg font-bold text-red-700 dark:text-red-300">
                     {expiryWarning.expiryDate || '-'}
                   </span>
@@ -1364,14 +1360,14 @@ export default function CheckPage() {
               </div>
               <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">製造日</span>
+                  <span className="text-base text-muted-foreground">製造日</span>
                   <span className="text-lg font-medium text-foreground">
                     {expiryWarning.productionDate || '未入力'}
                   </span>
                 </div>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground mb-4">
+            <div className="text-base text-muted-foreground mb-4">
               このまま続けますか？それとも確認して修正しますか？
             </div>
             <DialogFooter className="gap-2 sm:gap-0">
@@ -1457,10 +1453,10 @@ export default function CheckPage() {
               <p className="text-3xl font-bold text-amber-700 dark:text-amber-300">
                 {productionDateWarning.date}
               </p>
-              <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">入力された製造日</p>
+              <p className="text-base text-amber-600 dark:text-amber-400 mt-1">入力された製造日</p>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground mb-4">
+          <div className="text-base text-muted-foreground mb-4">
             この日付で続けますか？それとも修正しますか？
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
@@ -1506,7 +1502,7 @@ export default function CheckPage() {
               {errors.map((error) => (
                 <div
                   key={error.formKey}
-                  className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm"
+                  className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg text-base"
                 >
                   <p className="font-medium text-red-700 dark:text-red-300">
                     {error.itemName}
@@ -1542,12 +1538,12 @@ export default function CheckPage() {
                 {product?.icon && <span className="text-2xl">{product.icon}</span>}
                 <div>
                   <p className="font-bold">{product?.name}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-base text-muted-foreground">
                     {(productionDateItemId ? formData[productionDateItemId] : formData['production_date']) || '日付未設定'}
                   </p>
                 </div>
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-base text-muted-foreground">
                 <p>バッチ番号: #{formData['batch_number'] || '-'}</p>
                 <p>
                   入力項目: {completedItems}/{totalItems} 完了
@@ -1588,7 +1584,7 @@ export default function CheckPage() {
           </DialogHeader>
           <div className="py-4">
             <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 text-center">
-              <p className="text-sm text-emerald-700 dark:text-emerald-300">
+              <p className="text-base text-emerald-700 dark:text-emerald-300">
                 承認されるとホーム画面の履歴から
                 <br />
                 確認できるようになります。

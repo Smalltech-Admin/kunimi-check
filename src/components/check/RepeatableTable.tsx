@@ -49,21 +49,21 @@ export function RepeatableTable({
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
               {/* Row label header */}
-              <th className="text-left text-xs font-medium text-muted-foreground py-2 px-2 w-[120px] min-w-[120px] sticky left-0 bg-white dark:bg-slate-800 z-10">
+              <th className="text-left text-lg font-medium text-muted-foreground py-2 px-2 w-[120px] min-w-[120px] sticky left-0 bg-white dark:bg-slate-800 z-10">
                 {hasFixedLabels ? '' : '#'}
               </th>
               {/* Item column headers */}
               {items.map((item) => (
                 <th
                   key={item.id}
-                  className="text-left text-xs font-medium text-muted-foreground py-2 px-2 min-w-[140px]"
+                  className="text-left text-lg font-medium text-muted-foreground py-2 px-2 min-w-[140px]"
                 >
                   {item.label}
                   {item.required && (
                     <span className="text-destructive ml-0.5">*</span>
                   )}
                   {item.hint && (
-                    <span className="block text-[10px] text-muted-foreground/70 font-normal">
+                    <span className="block text-lg text-muted-foreground/70 font-normal">
                       {item.hint}
                     </span>
                   )}
@@ -86,7 +86,7 @@ export function RepeatableTable({
                   )}
                 >
                   {/* Row label (sticky left) */}
-                  <td className="py-2 px-2 text-sm font-medium text-slate-600 dark:text-slate-400 w-[120px] min-w-[120px] sticky left-0 bg-inherit z-10">
+                  <td className="py-2 px-2 text-lg font-medium text-slate-600 dark:text-slate-400 w-[120px] min-w-[120px] sticky left-0 bg-inherit z-10">
                     <div className="truncate">{rowLabel}</div>
                   </td>
                   {/* Item cells */}
@@ -112,7 +112,7 @@ export function RepeatableTable({
                           hasError={!!cellError}
                         />
                         {cellError && (
-                          <p className="text-[10px] text-red-500 mt-0.5 truncate">
+                          <p className="text-lg text-red-500 mt-0.5 truncate">
                             {cellError}
                           </p>
                         )}
@@ -135,7 +135,7 @@ export function RepeatableTable({
               variant="outline"
               size="sm"
               onClick={onRemoveRow}
-              className="text-sm"
+              className="text-lg"
             >
               <Minus className="w-4 h-4 mr-1" />
               行を削除
@@ -147,7 +147,7 @@ export function RepeatableTable({
               variant="outline"
               size="sm"
               onClick={onAddRow}
-              className="text-sm"
+              className="text-lg"
             >
               <Plus className="w-4 h-4 mr-1" />
               行を追加

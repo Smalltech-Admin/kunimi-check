@@ -38,7 +38,7 @@ export function ProgressBar({
   return (
     <div className={className}>
       {showLabel && (
-        <div className="flex justify-between text-sm mb-1">
+        <div className="flex justify-between text-base mb-1">
           <span className={cn('font-medium', getTextColor())}>
             {current}/{total}項目
           </span>

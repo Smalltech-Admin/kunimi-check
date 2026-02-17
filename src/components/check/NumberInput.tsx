@@ -90,7 +90,7 @@ export function NumberInput({
       </div>
 
       {/* Range indicator / Warning */}
-      <div className="flex items-center gap-1 text-sm">
+      <div className="flex items-center gap-1 text-base">
         {isOutOfRange ? (
           <>
             <AlertTriangle className="w-4 h-4 text-amber-500" />

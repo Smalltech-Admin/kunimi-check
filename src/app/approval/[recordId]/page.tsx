@@ -460,7 +460,7 @@ export default function ApprovalDetailPage() {
                   )}
                 </Button>
               )}
-              <span className="px-3 py-1 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
+              <span className="px-3 py-1 text-lg font-medium bg-amber-100 text-amber-700 rounded-full">
                 承認待ち
               </span>
             </div>
@@ -474,7 +474,7 @@ export default function ApprovalDetailPage() {
               <h1 className="font-bold text-xl text-foreground">
                 {record.product_name}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl text-muted-foreground">
                 バッチ #{record.batch_number}
               </p>
             </div>
@@ -492,7 +492,7 @@ export default function ApprovalDetailPage() {
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4"
           >
             <h2 className="font-bold text-lg mb-3 text-foreground">基本情報</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 gap-4 text-xl">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
                 <div>
@@ -523,7 +523,7 @@ export default function ApprovalDetailPage() {
               </div>
             </div>
             <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl text-muted-foreground">
                 提出日時: {formatDateTime(record.submitted_at)}
               </p>
             </div>
@@ -541,7 +541,7 @@ export default function ApprovalDetailPage() {
               <div className="px-4 py-3 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
                 <h3 className="font-bold text-foreground">{section.name}</h3>
                 {section.description && (
-                  <p className="text-sm text-muted-foreground">{section.description}</p>
+                  <p className="text-xl text-muted-foreground">{section.description}</p>
                 )}
               </div>
 
@@ -556,9 +556,9 @@ export default function ApprovalDetailPage() {
                     <div key={item.id} className="px-4 py-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-foreground">{item.label}</span>
+                          <span className="text-xl text-foreground">{item.label}</span>
                           {item.unit && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-lg text-muted-foreground">
                               ({item.unit})
                             </span>
                           )}
@@ -568,7 +568,7 @@ export default function ApprovalDetailPage() {
                             <AlertTriangle className="w-4 h-4 text-amber-500" />
                           )}
                           <span
-                            className={`text-sm font-medium ${
+                            className={`text-xl font-medium ${
                               outOfRange
                                 ? 'text-amber-600 dark:text-amber-400'
                                 : value === 'ok'
@@ -586,7 +586,7 @@ export default function ApprovalDetailPage() {
                         </div>
                       </div>
                       {meta && (
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-lg text-muted-foreground mt-1">
                           入力: {meta.inputByName}{meta.inputAt ? ` / ${formatDateTime(meta.inputAt)}` : ''}
                         </p>
                       )}
@@ -645,12 +645,12 @@ export default function ApprovalDetailPage() {
                 )}
                 <div>
                   <p className="font-bold">{record.product_name}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xl text-muted-foreground">
                     バッチ #{record.batch_number}
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl text-muted-foreground">
                 提出者: {record.submitted_by_name}
               </p>
             </div>

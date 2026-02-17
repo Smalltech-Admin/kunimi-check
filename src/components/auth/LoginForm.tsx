@@ -127,7 +127,7 @@ export function LoginForm({ users, onSubmit, isLoading, error }: LoginFormProps)
         )}
       </Button>
 
-      <p className="text-sm text-muted-foreground text-center">
+      <p className="text-lg text-muted-foreground text-center">
         デモ用：パスワードは省略可能です
       </p>
     </motion.form>

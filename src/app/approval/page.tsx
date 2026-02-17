@@ -227,7 +227,7 @@ export default function ApprovalListPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="px-4 py-1.5 text-sm font-medium bg-amber-100 text-amber-700 rounded-full">
+                      <span className="px-4 py-1.5 text-xl font-medium bg-amber-100 text-amber-700 rounded-full">
                         承認待ち
                       </span>
                     </div>

@@ -84,7 +84,7 @@ export function CheckSection({
                 {section.name}
               </h3>
               {hasErrors && (
-                <span className="text-sm px-2 py-1 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-full">
+                <span className="text-lg px-2 py-1 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-full">
                   {errorCount}件エラー
                 </span>
               )}

@@ -318,13 +318,13 @@ export default function HistoryDetailPage() {
   }
 
   const statusBadge = record.status === 'approved' ? (
-    <span className="px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1">
-      <CheckCircle className="w-3 h-3" />
+    <span className="px-3 py-1 text-lg font-medium bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1">
+      <CheckCircle className="w-4 h-4" />
       承認済み
     </span>
   ) : (
-    <span className="px-3 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full flex items-center gap-1">
-      <XCircle className="w-3 h-3" />
+    <span className="px-3 py-1 text-lg font-medium bg-red-100 text-red-700 rounded-full flex items-center gap-1">
+      <XCircle className="w-4 h-4" />
       差戻し
     </span>
   );
@@ -377,7 +377,7 @@ export default function HistoryDetailPage() {
               <h1 className="font-bold text-xl text-foreground">
                 {record.product_name}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl text-muted-foreground">
                 バッチ #{record.batch_number}
               </p>
             </div>
@@ -395,7 +395,7 @@ export default function HistoryDetailPage() {
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4"
           >
             <h2 className="font-bold text-lg mb-3 text-foreground">基本情報</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 gap-4 text-xl">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
                 <div>
@@ -426,7 +426,7 @@ export default function HistoryDetailPage() {
               </div>
             </div>
             <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl text-muted-foreground">
                 提出日時: {formatDateTime(record.submitted_at)}
               </p>
             </div>
@@ -443,7 +443,7 @@ export default function HistoryDetailPage() {
                 <AlertTriangle className="w-5 h-5 text-red-600" />
                 <h3 className="font-bold text-red-700 dark:text-red-400">差戻し理由</h3>
               </div>
-              <p className="text-sm text-red-600 dark:text-red-300">
+              <p className="text-xl text-red-600 dark:text-red-300">
                 {record.reject_reason}
               </p>
             </motion.div>
@@ -461,7 +461,7 @@ export default function HistoryDetailPage() {
               <div className="px-4 py-3 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
                 <h3 className="font-bold text-foreground">{section.name}</h3>
                 {section.description && (
-                  <p className="text-sm text-muted-foreground">{section.description}</p>
+                  <p className="text-xl text-muted-foreground">{section.description}</p>
                 )}
               </div>
 
@@ -476,9 +476,9 @@ export default function HistoryDetailPage() {
                     <div key={item.id} className="px-4 py-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-foreground">{item.label}</span>
+                          <span className="text-xl text-foreground">{item.label}</span>
                           {item.unit && (
-                            <span className="text-xs text-muted-foreground">({item.unit})</span>
+                            <span className="text-lg text-muted-foreground">({item.unit})</span>
                           )}
                         </div>
                         <div className="flex items-center gap-2">
@@ -486,7 +486,7 @@ export default function HistoryDetailPage() {
                             <AlertTriangle className="w-4 h-4 text-amber-500" />
                           )}
                           <span
-                            className={`text-sm font-medium ${
+                            className={`text-xl font-medium ${
                               outOfRange
                                 ? 'text-amber-600 dark:text-amber-400'
                                 : value === 'ok'
@@ -504,7 +504,7 @@ export default function HistoryDetailPage() {
                         </div>
                       </div>
                       {meta && (
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-lg text-muted-foreground mt-1">
                           入力: {meta.inputByName}{meta.inputAt ? ` / ${formatDateTime(meta.inputAt)}` : ''}
                         </p>
                       )}
@@ -523,7 +523,7 @@ export default function HistoryDetailPage() {
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4"
           >
             <h2 className="font-bold text-lg mb-3 text-foreground">承認情報</h2>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-xl">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">提出者</span>
                 <span className="font-medium">{record.submitted_by_name}</span>
@@ -568,7 +568,7 @@ export default function HistoryDetailPage() {
             {isIOS ? (
               <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 text-center">
                 <Monitor className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xl text-muted-foreground">
                   PDF出力はPCから行ってください
                 </p>
               </div>

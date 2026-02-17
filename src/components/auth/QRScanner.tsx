@@ -112,15 +112,15 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
         {status === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
             <Camera className="w-16 h-16 mb-4" />
-            <p className="text-sm">社員証のQRコードを</p>
-            <p className="text-sm">かざしてください</p>
+            <p className="text-lg">社員証のQRコードを</p>
+            <p className="text-lg">かざしてください</p>
           </div>
         )}
 
         {status === 'starting' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
             <div className="w-8 h-8 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-sm">カメラを起動中...</p>
+            <p className="text-lg">カメラを起動中...</p>
           </div>
         )}
 
@@ -138,7 +138,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
         {status === 'error' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 px-4 text-center">
             <VideoOff className="w-12 h-12 mb-4 text-red-400" />
-            <p className="text-sm text-red-400">{errorMessage}</p>
+            <p className="text-lg text-red-400">{errorMessage}</p>
           </div>
         )}
 

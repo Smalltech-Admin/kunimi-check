@@ -412,12 +412,12 @@ export default function HistoryPage() {
                       </div>
                       <div className="flex items-center gap-3">
                         {record.status === 'approved' ? (
-                          <span className="px-4 py-1.5 text-sm font-medium bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1.5">
+                          <span className="px-4 py-1.5 text-xl font-medium bg-emerald-100 text-emerald-700 rounded-full flex items-center gap-1.5">
                             <CheckCircle className="w-4 h-4" />
                             承認済み
                           </span>
                         ) : (
-                          <span className="px-4 py-1.5 text-sm font-medium bg-red-100 text-red-700 rounded-full flex items-center gap-1.5">
+                          <span className="px-4 py-1.5 text-xl font-medium bg-red-100 text-red-700 rounded-full flex items-center gap-1.5">
                             <XCircle className="w-4 h-4" />
                             差戻し
                           </span>
@@ -457,7 +457,7 @@ export default function HistoryPage() {
 
                     {/* Timestamp */}
                     <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xl text-muted-foreground">
                         {record.status === 'approved'
                           ? `承認日時: ${formatDateTime(record.approved_at)}`
                           : `差戻し日時: ${formatDateTime(record.rejected_at)}`}
