@@ -53,7 +53,12 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
         { facingMode: 'user' },  // 内カメラ（フロントカメラ）を使用
         {
           fps: 10,
-          qrbox: { width: 200, height: 200 },
+          // qrboxをコンテナサイズの比率で動的計算（PC/iPad差異を解消）
+          qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+            const minDimension = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minDimension * 0.7);
+            return { width: qrboxSize, height: qrboxSize };
+          },
           aspectRatio: 1.0,
         },
         (decodedText) => {
@@ -107,7 +112,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
       {/* Camera Preview Area */}
       <div
         ref={containerRef}
-        className="relative w-[300px] h-[300px] bg-slate-800 rounded-2xl overflow-hidden"
+        className="relative w-[300px] h-[300px] bg-slate-800 rounded-2xl overflow-hidden qr-scanner-container"
       >
         {status === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
@@ -147,19 +152,6 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
           id="qr-reader"
           className={`w-full h-full ${status === 'scanning' ? '' : 'invisible absolute'}`}
         />
-
-        {/* Scan overlay (only during active scanning) */}
-        {status === 'scanning' && (
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="relative w-[200px] h-[200px]">
-              {/* Corner decorations */}
-              <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-emerald-400 rounded-tl" />
-              <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-emerald-400 rounded-tr" />
-              <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-emerald-400 rounded-bl" />
-              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-emerald-400 rounded-br" />
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Action Buttons */}

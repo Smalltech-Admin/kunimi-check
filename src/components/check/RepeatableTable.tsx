@@ -22,6 +22,7 @@ interface RepeatableTableProps {
   errorMap: Record<string, string>;
   canAddRow: boolean;
   canRemoveRow: boolean;
+  disabled?: boolean;
 }
 
 export function RepeatableTable({
@@ -37,6 +38,7 @@ export function RepeatableTable({
   errorMap,
   canAddRow,
   canRemoveRow,
+  disabled = false,
 }: RepeatableTableProps) {
   const items = section.items ?? [];
   const hasFixedLabels = section.fixed_labels && section.fixed_labels.length > 0;
@@ -109,6 +111,7 @@ export function RepeatableTable({
                           users={users}
                           lines={lines}
                           compact
+                          disabled={disabled}
                           hasError={!!cellError}
                         />
                         {cellError && (
@@ -127,7 +130,7 @@ export function RepeatableTable({
       </div>
 
       {/* Add/Remove row buttons */}
-      {(canAddRow || canRemoveRow) && (
+      {!disabled && (canAddRow || canRemoveRow) && (
         <div className="flex gap-2 justify-end">
           {canRemoveRow && (
             <Button

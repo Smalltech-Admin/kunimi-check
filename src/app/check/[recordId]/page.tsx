@@ -25,6 +25,7 @@ import {
   expandAllItems,
   buildRepeatableSectionIds,
 } from '@/lib/repeatable';
+import Link from 'next/link';
 import type {
   User,
   Product,
@@ -32,6 +33,7 @@ import type {
   Item,
   Template,
   RecordItem,
+  RecordStatus,
 } from '@/types';
 
 // エラー型定義
@@ -93,6 +95,8 @@ export default function CheckPage() {
   );
   // テンプレートID
   const [templateId, setTemplateId] = useState<string | null>(null);
+  // レコードのステータス（FSSC22000: 承認後の編集制限）
+  const [recordStatus, setRecordStatus] = useState<RecordStatus | null>(null);
 
   // 既存のrecord_items（変更履歴用に前の値を保持）
   const existingItemsRef = useRef<Record<string, RecordItem>>({});
@@ -206,8 +210,18 @@ export default function CheckPage() {
         console.warn('[Check] No template found for product UUID:', productUUID);
       }
 
-      // 既存レコードの場合、record_itemsを読み込む
+      // 既存レコードの場合、check_recordsのステータスとrecord_itemsを読み込む
       if (recordId !== 'new') {
+        // レコードのステータスを取得（FSSC22000: 承認後の編集制限判定に使用）
+        const { data: recordData } = await supabase
+          .from('check_records')
+          .select('status')
+          .eq('id', recordId)
+          .single();
+        if (recordData) {
+          setRecordStatus((recordData as unknown as { status: RecordStatus }).status);
+        }
+
         const { data: recordItems } = await supabase
           .from('record_items')
           .select('*')
@@ -555,8 +569,12 @@ export default function CheckPage() {
     };
   };
 
+  // 編集可能かどうか（FSSC22000: 承認後の編集制限）
+  // draft（下書き）とrejected（差戻し）のみ編集可能。新規作成時（recordStatus === null）も編集可能。
+  const isEditable = recordStatus === null || recordStatus === 'draft' || recordStatus === 'rejected';
+
   // 提出可能かどうか
-  const canSubmit = completedItems >= totalItems && errors.length === 0;
+  const canSubmit = isEditable && completedItems >= totalItems && errors.length === 0;
 
   // line_codeからUUIDを解決するヘルパー
   const resolveLineId = useCallback(
@@ -1083,6 +1101,22 @@ export default function CheckPage() {
       {/* Scrollable Content - pb-56 ensures content doesn't hide behind fixed footer */}
       <main className="flex-1 overflow-y-auto pb-56">
         <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+          {/* FSSC22000: 編集不可時のバナー */}
+          {!isEditable && (
+            <div className="bg-amber-50 border-l-4 border-amber-400 rounded-r-lg p-4">
+              <p className="text-lg font-medium text-amber-800">
+                このチェック表は
+                {recordStatus === 'approved' ? '承認済み' : '提出済み'}
+                のため編集できません。
+              </p>
+              <Link
+                href={`/history/${recordId}`}
+                className="text-lg text-primary underline mt-1 inline-block"
+              >
+                履歴画面で確認する →
+              </Link>
+            </div>
+          )}
           {sections.map((section, index) => {
             const completion = getSectionCompletion(section);
             const sectionErrorCount = getSectionErrorCount(section);
@@ -1121,6 +1155,7 @@ export default function CheckPage() {
                         (rowCounts[section.id] || section.min_rows || 1) >
                         (section.min_rows || 1)
                       }
+                      disabled={!isEditable}
                     />
                   ) : (
                     (section.items ?? []).map((item) => {
@@ -1138,6 +1173,7 @@ export default function CheckPage() {
                           onSelfSelect={() => handleSelfSelect(item.id)}
                           users={users}
                           lines={lines}
+                          disabled={!isEditable}
                           hasError={!!itemError}
                           errorMessage={itemError?.message}
                         />
@@ -1159,6 +1195,25 @@ export default function CheckPage() {
         style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
       >
         <div className="max-w-2xl mx-auto">
+          {/* FSSC22000: 編集不可時は操作ボタンの代わりに案内を表示 */}
+          {!isEditable ? (
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 h-14 text-base"
+                onClick={handleBack}
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                ホームに戻る
+              </Button>
+              <Link href={`/history/${recordId}`} className="flex-1">
+                <Button className="w-full h-14 text-base bg-primary hover:bg-primary/90">
+                  履歴画面で確認
+                </Button>
+              </Link>
+            </div>
+          ) : (
+          <>
           {/* エラーメッセージ */}
           {errors.length > 0 && (
             <div className="mb-3 p-2 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center gap-2 text-base text-red-700 dark:text-red-300">
@@ -1211,6 +1266,8 @@ export default function CheckPage() {
               )}
             </Button>
           </div>
+          </>
+          )}
         </div>
       </motion.footer>
 
