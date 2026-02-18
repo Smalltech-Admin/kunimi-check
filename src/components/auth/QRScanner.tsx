@@ -53,10 +53,10 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
         { facingMode: 'user' },  // 内カメラ（フロントカメラ）を使用
         {
           fps: 10,
-          // qrboxをコンテナサイズの比率で動的計算（PC/iPad差異を解消）
+          // qrboxをビューファインダーの80%に設定（大きな読み取り領域を確保）
           qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
             const minDimension = Math.min(viewfinderWidth, viewfinderHeight);
-            const qrboxSize = Math.floor(minDimension * 0.7);
+            const qrboxSize = Math.floor(minDimension * 0.8);
             return { width: qrboxSize, height: qrboxSize };
           },
           aspectRatio: 1.0,
@@ -112,7 +112,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
       {/* Camera Preview Area */}
       <div
         ref={containerRef}
-        className="relative w-[300px] h-[300px] bg-slate-800 rounded-2xl overflow-hidden qr-scanner-container"
+        className="relative w-full max-w-[400px] aspect-square bg-slate-800 rounded-2xl overflow-hidden qr-scanner-container"
       >
         {status === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
