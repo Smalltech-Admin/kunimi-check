@@ -13,9 +13,14 @@ interface QRScannerProps {
 export default function QRScanner({ onScan, onError }: QRScannerProps) {
   const [status, setStatus] = useState<'idle' | 'starting' | 'scanning' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const scannerRef = useRef<{ stop: () => Promise<void> } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scannedRef = useRef(false);
+
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   const cleanup = useCallback(async () => {
     if (scannerRef.current) {
@@ -49,17 +54,22 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
 
       scannerRef.current = scanner;
 
+      // タッチデバイス判定（iPad/スマホ → 4:3カメラ、PC → 16:9カメラ）
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
       await scanner.start(
         { facingMode: 'user' },  // 内カメラ（フロントカメラ）を使用
         {
           fps: 10,
-          // qrboxをビューファインダーの80%に設定（大きな読み取り領域を確保）
+          // qrboxをビューファインダーの短辺80%に設定
           qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
             const minDimension = Math.min(viewfinderWidth, viewfinderHeight);
             const qrboxSize = Math.floor(minDimension * 0.8);
             return { width: qrboxSize, height: qrboxSize };
           },
-          aspectRatio: 1.0,
+          // iPad(4:3カメラ): ネイティブ比率でフル表示 → スキャン領域最大化
+          // PC(16:9カメラ): 1:1にクロップ → 正方形コンテナに収める
+          ...(isTouchDevice ? {} : { aspectRatio: 1.0 }),
         },
         (decodedText) => {
           // Prevent double-scan
@@ -112,7 +122,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
       {/* Camera Preview Area */}
       <div
         ref={containerRef}
-        className="relative w-full max-w-[400px] aspect-square bg-slate-800 rounded-2xl overflow-hidden qr-scanner-container"
+        className={`relative w-full max-w-[400px] bg-slate-800 rounded-2xl overflow-hidden qr-scanner-container ${isTouchDevice ? 'aspect-[3/4]' : 'aspect-square'}`}
       >
         {status === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
