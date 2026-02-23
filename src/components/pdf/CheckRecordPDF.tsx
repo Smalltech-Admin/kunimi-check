@@ -3,6 +3,7 @@ import {
   Page,
   Text,
   View,
+  Image,
   StyleSheet,
   Font,
 } from '@react-pdf/renderer';
@@ -206,6 +207,20 @@ const styles = StyleSheet.create({
   valueEmpty: {
     color: '#94a3b8',
     fontStyle: 'italic',
+  },
+  photoRow: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderBottom: '1px solid #f1f5f9',
+  },
+  photoLabel: {
+    fontSize: 9,
+    color: '#334155',
+    marginBottom: 4,
+  },
+  photoImage: {
+    maxHeight: 120,
+    objectFit: 'contain' as const,
   },
   // Approval info
   approvalCard: {
@@ -411,6 +426,21 @@ export function CheckRecordPDF({ data }: { data: CheckRecordPDFData }) {
             </View>
             {(section.items ?? []).map((item, idx) => {
               const rawValue = data.formData[item.id];
+
+              // Photo type: render image instead of table row
+              if (item.type === 'photo') {
+                return (
+                  <View key={item.id} style={styles.photoRow}>
+                    <Text style={styles.photoLabel}>{item.label}</Text>
+                    {rawValue && typeof rawValue === 'string' ? (
+                      <Image src={rawValue} style={styles.photoImage} />
+                    ) : (
+                      <Text style={styles.valueEmpty}>未撮影</Text>
+                    )}
+                  </View>
+                );
+              }
+
               const displayValue = getDisplayValue(
                 item.type,
                 rawValue,

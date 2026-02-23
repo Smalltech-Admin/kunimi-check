@@ -42,6 +42,12 @@ SET sections = '[
         }
       },
       {
+        "id": "S1-3-photo",
+        "label": "賞味期限写真",
+        "type": "photo",
+        "required": true
+      },
+      {
         "id": "S1-4",
         "label": "賞味期限確認者",
         "type": "user_select",

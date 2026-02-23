@@ -124,6 +124,12 @@ export const mockSections: Section[] = [
           message: '賞味期限が過去の日付です',
         },
       },
+      {
+        id: 'S1-3-photo',
+        label: '賞味期限写真',
+        type: 'photo',
+        required: true,
+      },
     ],
   },
   {

@@ -140,7 +140,8 @@ INSERT INTO templates (template_id, product_id, version, sections_json, is_activ
       "items": [
         {"item_id": "S1-1", "label": "製造日", "type": "date", "required": true},
         {"item_id": "S1-2", "label": "担当者", "type": "user_select", "required": true, "allow_self": true},
-        {"item_id": "S1-3", "label": "賞味期限", "type": "date", "required": true, "hint": "360日後", "validation": {"type": "expiry_date", "message": "賞味期限が過去の日付です"}}
+        {"item_id": "S1-3", "label": "賞味期限", "type": "date", "required": true, "hint": "360日後", "validation": {"type": "expiry_date", "message": "賞味期限が過去の日付です"}},
+        {"item_id": "S1-3-photo", "label": "賞味期限写真", "type": "photo", "required": true}
       ]
     },
     {

@@ -1156,6 +1156,8 @@ export default function CheckPage() {
                         (section.min_rows || 1)
                       }
                       disabled={!isEditable}
+                      recordId={currentRecordId}
+                      onEnsureRecord={ensureRecord}
                     />
                   ) : (
                     (section.items ?? []).map((item) => {
@@ -1176,6 +1178,8 @@ export default function CheckPage() {
                           disabled={!isEditable}
                           hasError={!!itemError}
                           errorMessage={itemError?.message}
+                          recordId={currentRecordId}
+                          onEnsureRecord={ensureRecord}
                         />
                       );
                     })

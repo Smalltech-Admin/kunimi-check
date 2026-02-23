@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { OkNgToggle } from './OkNgToggle';
 import { NumberInput } from './NumberInput';
+import { PhotoCapture } from './PhotoCapture';
 import { cn } from '@/lib/utils';
 import type { Item } from '@/types';
 
@@ -29,6 +30,8 @@ interface CheckItemProps {
   hasError?: boolean;
   errorMessage?: string;
   compact?: boolean;
+  recordId?: string | null;
+  onEnsureRecord?: () => Promise<string | null>;
 }
 
 export function CheckItem({
@@ -42,6 +45,8 @@ export function CheckItem({
   hasError = false,
   errorMessage,
   compact = false,
+  recordId,
+  onEnsureRecord,
 }: CheckItemProps) {
   const inputHeight = compact ? 'h-10' : 'h-12';
   const inputText = compact ? 'text-lg' : 'text-base';
@@ -206,6 +211,18 @@ export function CheckItem({
               </Button>
             )}
           </div>
+        );
+
+      case 'photo':
+        return (
+          <PhotoCapture
+            value={(value as string) || null}
+            onChange={(url) => onChange(url)}
+            recordId={recordId ?? null}
+            itemId={item.id}
+            disabled={disabled}
+            onEnsureRecord={onEnsureRecord ?? (() => Promise.resolve(null))}
+          />
         );
 
       case 'text':

@@ -23,6 +23,8 @@ interface RepeatableTableProps {
   canAddRow: boolean;
   canRemoveRow: boolean;
   disabled?: boolean;
+  recordId?: string | null;
+  onEnsureRecord?: () => Promise<string | null>;
 }
 
 export function RepeatableTable({
@@ -39,6 +41,8 @@ export function RepeatableTable({
   canAddRow,
   canRemoveRow,
   disabled = false,
+  recordId,
+  onEnsureRecord,
 }: RepeatableTableProps) {
   const items = section.items ?? [];
   const hasFixedLabels = section.fixed_labels && section.fixed_labels.length > 0;
@@ -113,6 +117,8 @@ export function RepeatableTable({
                           compact
                           disabled={disabled}
                           hasError={!!cellError}
+                          recordId={recordId}
+                          onEnsureRecord={onEnsureRecord}
                         />
                         {cellError && (
                           <p className="text-lg text-red-500 mt-0.5 truncate">

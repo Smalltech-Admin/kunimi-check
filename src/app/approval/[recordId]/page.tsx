@@ -563,6 +563,7 @@ export default function ApprovalDetailPage() {
                             </span>
                           )}
                         </div>
+                        {item.type !== 'photo' && (
                         <div className="flex items-center gap-2">
                           {outOfRange && (
                             <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -584,7 +585,21 @@ export default function ApprovalDetailPage() {
                             <CheckCircle className="w-4 h-4 text-emerald-500" />
                           )}
                         </div>
+                        )}
                       </div>
+                      {item.type === 'photo' && value && typeof value === 'string' && (
+                        <div className="mt-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={value}
+                            alt={item.label}
+                            className="w-full max-h-64 object-contain bg-slate-100 dark:bg-slate-800"
+                          />
+                        </div>
+                      )}
+                      {item.type === 'photo' && (!value || value === '') && (
+                        <p className="mt-2 text-lg text-muted-foreground">未撮影</p>
+                      )}
                       {meta && (
                         <p className="text-lg text-muted-foreground mt-1">
                           入力: {meta.inputByName}{meta.inputAt ? ` / ${formatDateTime(meta.inputAt)}` : ''}

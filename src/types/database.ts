@@ -139,7 +139,8 @@ export type ItemType =
   | 'ok_ng'
   | 'select'
   | 'user_select'
-  | 'line_select';
+  | 'line_select'
+  | 'photo';
 
 export interface ValidationRule {
   type: 'min' | 'max' | 'range' | 'expiry_date' | 'equals' | 'pattern';
