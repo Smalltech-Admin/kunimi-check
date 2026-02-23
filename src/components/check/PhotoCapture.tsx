@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
-import { Camera, Trash2, Loader2 } from 'lucide-react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { Camera, Trash2, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 
@@ -66,15 +66,32 @@ export function PhotoCapture({
 }: PhotoCaptureProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
+
+  // Clean up local preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    };
+  }, [localPreview]);
+
+  // Display source: local preview (immediate) → uploaded URL (after upload)
+  const displaySrc = localPreview || value;
 
   const handleFileSelect = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
 
+      // Show local preview immediately
+      const previewUrl = URL.createObjectURL(file);
+      setLocalPreview(previewUrl);
+      setUploadError(false);
       setIsUploading(true);
+
       try {
         // Ensure record exists before uploading
         let recId = recordId;
@@ -82,6 +99,7 @@ export function PhotoCapture({
           recId = await onEnsureRecord();
           if (!recId) {
             console.error('[PhotoCapture] Failed to create record');
+            setUploadError(true);
             setIsUploading(false);
             return;
           }
@@ -103,15 +121,16 @@ export function PhotoCapture({
         }
 
         // Upload to Supabase Storage
-        const { error: uploadError } = await supabase.storage
+        const { error: upErr } = await supabase.storage
           .from('check-photos')
           .upload(path, resized, {
             contentType: 'image/jpeg',
             upsert: true,
           });
 
-        if (uploadError) {
-          console.error('[PhotoCapture] Upload error:', uploadError);
+        if (upErr) {
+          console.error('[PhotoCapture] Upload error:', upErr);
+          setUploadError(true);
           setIsUploading(false);
           return;
         }
@@ -122,11 +141,15 @@ export function PhotoCapture({
           .getPublicUrl(path);
 
         onChange(urlData.publicUrl);
+
+        // Clear local preview (now using uploaded URL)
+        URL.revokeObjectURL(previewUrl);
+        setLocalPreview(null);
       } catch (err) {
         console.error('[PhotoCapture] Error:', err);
+        setUploadError(true);
       } finally {
         setIsUploading(false);
-        // Reset input so same file can be re-selected
         if (inputRef.current) inputRef.current.value = '';
       }
     },
@@ -134,33 +157,62 @@ export function PhotoCapture({
   );
 
   const handleDelete = useCallback(async () => {
-    if (!value) return;
+    if (!value && !localPreview) return;
     setIsDeleting(true);
     try {
-      const path = extractStoragePath(value);
-      if (path) {
-        await supabase.storage.from('check-photos').remove([path]);
+      if (value) {
+        const path = extractStoragePath(value);
+        if (path) {
+          await supabase.storage.from('check-photos').remove([path]);
+        }
       }
       onChange(null);
+      if (localPreview) {
+        URL.revokeObjectURL(localPreview);
+        setLocalPreview(null);
+      }
+      setUploadError(false);
     } catch (err) {
       console.error('[PhotoCapture] Delete error:', err);
     } finally {
       setIsDeleting(false);
     }
-  }, [value, onChange, supabase]);
+  }, [value, localPreview, onChange, supabase]);
 
   return (
     <div className="space-y-3">
-      {/* Preview */}
-      {value && (
+      {/* Preview - shows immediately after photo selection */}
+      {displaySrc && (
         <div className="relative rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={value}
+            src={displaySrc}
             alt="撮影した写真"
             className="w-full max-h-64 object-contain bg-slate-100 dark:bg-slate-800"
           />
-          {!disabled && (
+          {/* Upload status overlay */}
+          {isUploading && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <div className="bg-white rounded-lg px-4 py-2 flex items-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                <span className="text-base font-medium">保存中...</span>
+              </div>
+            </div>
+          )}
+          {/* Upload complete badge */}
+          {!isUploading && value && !localPreview && (
+            <div className="absolute top-2 left-2 bg-emerald-500 text-white rounded-full p-1">
+              <CheckCircle className="w-4 h-4" />
+            </div>
+          )}
+          {/* Upload error badge */}
+          {uploadError && !isUploading && (
+            <div className="absolute top-2 left-2 bg-red-500 text-white rounded-full p-1">
+              <AlertCircle className="w-4 h-4" />
+            </div>
+          )}
+          {/* Delete button */}
+          {!disabled && !isUploading && (
             <Button
               type="button"
               variant="destructive"
@@ -177,6 +229,14 @@ export function PhotoCapture({
             </Button>
           )}
         </div>
+      )}
+
+      {/* Error message */}
+      {uploadError && (
+        <p className="text-base text-red-600 flex items-center gap-1">
+          <AlertCircle className="w-4 h-4" />
+          アップロードに失敗しました。再度撮影してください。
+        </p>
       )}
 
       {/* Capture button */}
@@ -198,17 +258,8 @@ export function PhotoCapture({
             onClick={() => inputRef.current?.click()}
             disabled={isUploading}
           >
-            {isUploading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                アップロード中...
-              </>
-            ) : (
-              <>
-                <Camera className="w-5 h-5 mr-2" />
-                {value ? '写真を撮り直す' : '写真を撮影'}
-              </>
-            )}
+            <Camera className="w-5 h-5 mr-2" />
+            {displaySrc ? '写真を撮り直す' : '写真を撮影'}
           </Button>
         </div>
       )}
