@@ -641,14 +641,81 @@ export default function CheckPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentRecordId, user, productId, product, templateId, formData, lines, resolveLineId]);
 
-  // record_itemsをSupabaseに保存（upsert + 変更履歴）— repeatable対応
-  const saveItemsToSupabase = useCallback(
+  // 写真（data URL）をSupabase Storageにアップロードし、formData内のURLを差し替え
+  const uploadPendingPhotos = useCallback(
     async (recId: string) => {
+      // photo型の項目IDを収集
+      const photoItemIds = new Set<string>();
+      sections.forEach((section) => {
+        (section.items ?? []).forEach((item) => {
+          if (item.type === 'photo') photoItemIds.add(item.id);
+        });
+      });
+      if (photoItemIds.size === 0) return;
+
+      const updates: Record<string, string> = {};
+
+      for (const [formKey, value] of Object.entries(formData)) {
+        if (typeof value !== 'string') continue;
+        if (!value.startsWith('data:')) continue;
+
+        // formKeyからitemIdを抽出（repeatable: "itemId__row0" → "itemId"）
+        const baseItemId = formKey.includes('__') ? formKey.split('__')[0] : formKey;
+        if (!photoItemIds.has(baseItemId)) continue;
+
+        try {
+          // data URL → Blob変換
+          const res = await fetch(value);
+          const blob = await res.blob();
+          const timestamp = Date.now();
+          const path = `${recId}/${baseItemId}/${timestamp}.jpg`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('check-photos')
+            .upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+
+          if (uploadError) {
+            console.error('[uploadPendingPhotos] Upload error:', uploadError);
+            continue;
+          }
+
+          const { data: urlData } = supabase.storage
+            .from('check-photos')
+            .getPublicUrl(path);
+
+          if (urlData?.publicUrl) {
+            updates[formKey] = urlData.publicUrl;
+          }
+        } catch (err) {
+          console.error('[uploadPendingPhotos] Error uploading photo:', err);
+        }
+      }
+
+      // formDataを一括更新
+      if (Object.keys(updates).length > 0) {
+        setFormData((prev) => ({ ...prev, ...updates }));
+        // saveItemsToSupabaseが最新のformDataを使えるよう、直接返す
+        return updates;
+      }
+      return {};
+    },
+    [formData, sections, supabase]
+  );
+
+  // record_itemsをSupabaseに保存（upsert + 変更履歴）— repeatable対応
+  // photoOverrides: uploadPendingPhotosから返されたURL差し替えマップ
+  const saveItemsToSupabase = useCallback(
+    async (recId: string, photoOverrides?: Record<string, string>) => {
       if (!user) return;
       const now = new Date().toISOString();
 
+      // 写真のdata URLをアップロード後のURLに差し替えたformDataを使用
+      const effectiveFormData = photoOverrides
+        ? { ...formData, ...photoOverrides }
+        : formData;
+
       // DEBUG: 保存時の状態確認
-      const formDataKeys = Object.keys(formData).filter((k) => formData[k] !== undefined);
+      const formDataKeys = Object.keys(effectiveFormData).filter((k) => effectiveFormData[k] !== undefined);
       console.log('[saveItems] recId:', recId);
       console.log('[saveItems] sections count:', sections.length);
       console.log('[saveItems] formData keys with values:', formDataKeys.length, formDataKeys);
@@ -687,7 +754,7 @@ export default function CheckPage() {
         existingKey: string,
         rowIndex: number
       ) => {
-        const rawValue = formData[formKey];
+        const rawValue = effectiveFormData[formKey];
         if (rawValue === undefined) return;
 
         const value = rawValue === null ? null : String(rawValue);
@@ -783,7 +850,7 @@ export default function CheckPage() {
           console.log(`[saveItems] Section ${section.id} (${section.name}): ${items.length} items, repeatable=${section.repeatable}`);
           items.slice(0, 3).forEach((item) => {
             const fk = section.repeatable ? makeRepeatableKey(item.id, 0) : item.id;
-            console.log(`  item ${item.id} → formKey="${fk}" → formData value:`, formData[fk]);
+            console.log(`  item ${item.id} → formKey="${fk}" → formData value:`, effectiveFormData[fk]);
           });
         });
       }
@@ -836,8 +903,12 @@ export default function CheckPage() {
     }
     console.log('[handleSave] recId:', recId);
 
-    // record_itemsを保存
-    await saveItemsToSupabase(recId);
+    // 写真をSupabase Storageにアップロード（data URL → 公開URL）
+    const photoOverrides = await uploadPendingPhotos(recId) || {};
+    console.log('[handleSave] photoOverrides:', Object.keys(photoOverrides).length);
+
+    // record_itemsを保存（写真URLの差し替え適用済み）
+    await saveItemsToSupabase(recId, photoOverrides);
     console.log('[handleSave] saveItemsToSupabase completed');
 
     // レコードの基本情報も更新（ライン・日付・バッチ番号）
@@ -879,8 +950,11 @@ export default function CheckPage() {
       return;
     }
 
-    // まず全項目を保存
-    await saveItemsToSupabase(recId);
+    // 写真をSupabase Storageにアップロード（data URL → 公開URL）
+    const photoOverrides = await uploadPendingPhotos(recId) || {};
+
+    // まず全項目を保存（写真URLの差し替え適用済み）
+    await saveItemsToSupabase(recId, photoOverrides);
 
     const now = new Date().toISOString();
 
@@ -1156,8 +1230,6 @@ export default function CheckPage() {
                         (section.min_rows || 1)
                       }
                       disabled={!isEditable}
-                      recordId={currentRecordId}
-                      onEnsureRecord={ensureRecord}
                     />
                   ) : (
                     (section.items ?? []).map((item) => {
@@ -1178,8 +1250,6 @@ export default function CheckPage() {
                           disabled={!isEditable}
                           hasError={!!itemError}
                           errorMessage={itemError?.message}
-                          recordId={currentRecordId}
-                          onEnsureRecord={ensureRecord}
                         />
                       );
                     })
